@@ -9,14 +9,15 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IntialSetup_rootRouteImport } from './routes/intial-setup/__root'
+import { Route as InitialSetupRouteImport } from './routes/initial-setup'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ErrorIndexRouteImport } from './routes/error/index'
-import { Route as IntialSetupCreateVenueRouteImport } from './routes/intial-setup/create-venue'
-import { Route as IntialSetupCreateAdminRouteImport } from './routes/intial-setup/create-admin'
+import { Route as InitialSetupCreateVenueRouteImport } from './routes/initial-setup/create-venue'
+import { Route as InitialSetupCreateAdminRouteImport } from './routes/initial-setup/create-admin'
 
-const IntialSetup_rootRoute = IntialSetup_rootRouteImport.update({
-  id: '/intial-setup/__root',
+const InitialSetupRoute = InitialSetupRouteImport.update({
+  id: '/initial-setup',
+  path: '/initial-setup',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -29,78 +30,76 @@ const ErrorIndexRoute = ErrorIndexRouteImport.update({
   path: '/error/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const IntialSetupCreateVenueRoute = IntialSetupCreateVenueRouteImport.update({
-  id: '/intial-setup/create-venue',
-  path: '/intial-setup/create-venue',
-  getParentRoute: () => rootRouteImport,
+const InitialSetupCreateVenueRoute = InitialSetupCreateVenueRouteImport.update({
+  id: '/create-venue',
+  path: '/create-venue',
+  getParentRoute: () => InitialSetupRoute,
 } as any)
-const IntialSetupCreateAdminRoute = IntialSetupCreateAdminRouteImport.update({
-  id: '/intial-setup/create-admin',
-  path: '/intial-setup/create-admin',
-  getParentRoute: () => rootRouteImport,
+const InitialSetupCreateAdminRoute = InitialSetupCreateAdminRouteImport.update({
+  id: '/create-admin',
+  path: '/create-admin',
+  getParentRoute: () => InitialSetupRoute,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/intial-setup': typeof IntialSetup_rootRoute
-  '/intial-setup/create-admin': typeof IntialSetupCreateAdminRoute
-  '/intial-setup/create-venue': typeof IntialSetupCreateVenueRoute
+  '/initial-setup': typeof InitialSetupRouteWithChildren
+  '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
+  '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
   '/error/': typeof ErrorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/intial-setup': typeof IntialSetup_rootRoute
-  '/intial-setup/create-admin': typeof IntialSetupCreateAdminRoute
-  '/intial-setup/create-venue': typeof IntialSetupCreateVenueRoute
+  '/initial-setup': typeof InitialSetupRouteWithChildren
+  '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
+  '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
   '/error': typeof ErrorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/intial-setup/__root': typeof IntialSetup_rootRoute
-  '/intial-setup/create-admin': typeof IntialSetupCreateAdminRoute
-  '/intial-setup/create-venue': typeof IntialSetupCreateVenueRoute
+  '/initial-setup': typeof InitialSetupRouteWithChildren
+  '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
+  '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
   '/error/': typeof ErrorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/intial-setup'
-    | '/intial-setup/create-admin'
-    | '/intial-setup/create-venue'
+    | '/initial-setup'
+    | '/initial-setup/create-admin'
+    | '/initial-setup/create-venue'
     | '/error/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/intial-setup'
-    | '/intial-setup/create-admin'
-    | '/intial-setup/create-venue'
+    | '/initial-setup'
+    | '/initial-setup/create-admin'
+    | '/initial-setup/create-venue'
     | '/error'
   id:
     | '__root__'
     | '/'
-    | '/intial-setup/__root'
-    | '/intial-setup/create-admin'
-    | '/intial-setup/create-venue'
+    | '/initial-setup'
+    | '/initial-setup/create-admin'
+    | '/initial-setup/create-venue'
     | '/error/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  IntialSetup_rootRoute: typeof IntialSetup_rootRoute
-  IntialSetupCreateAdminRoute: typeof IntialSetupCreateAdminRoute
-  IntialSetupCreateVenueRoute: typeof IntialSetupCreateVenueRoute
+  InitialSetupRoute: typeof InitialSetupRouteWithChildren
   ErrorIndexRoute: typeof ErrorIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/intial-setup/__root': {
-      id: '/intial-setup/__root'
-      path: '/intial-setup'
-      fullPath: '/intial-setup'
-      preLoaderRoute: typeof IntialSetup_rootRouteImport
+    '/initial-setup': {
+      id: '/initial-setup'
+      path: '/initial-setup'
+      fullPath: '/initial-setup'
+      preLoaderRoute: typeof InitialSetupRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -117,28 +116,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErrorIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/intial-setup/create-venue': {
-      id: '/intial-setup/create-venue'
-      path: '/intial-setup/create-venue'
-      fullPath: '/intial-setup/create-venue'
-      preLoaderRoute: typeof IntialSetupCreateVenueRouteImport
-      parentRoute: typeof rootRouteImport
+    '/initial-setup/create-venue': {
+      id: '/initial-setup/create-venue'
+      path: '/create-venue'
+      fullPath: '/initial-setup/create-venue'
+      preLoaderRoute: typeof InitialSetupCreateVenueRouteImport
+      parentRoute: typeof InitialSetupRoute
     }
-    '/intial-setup/create-admin': {
-      id: '/intial-setup/create-admin'
-      path: '/intial-setup/create-admin'
-      fullPath: '/intial-setup/create-admin'
-      preLoaderRoute: typeof IntialSetupCreateAdminRouteImport
-      parentRoute: typeof rootRouteImport
+    '/initial-setup/create-admin': {
+      id: '/initial-setup/create-admin'
+      path: '/create-admin'
+      fullPath: '/initial-setup/create-admin'
+      preLoaderRoute: typeof InitialSetupCreateAdminRouteImport
+      parentRoute: typeof InitialSetupRoute
     }
   }
 }
 
+interface InitialSetupRouteChildren {
+  InitialSetupCreateAdminRoute: typeof InitialSetupCreateAdminRoute
+  InitialSetupCreateVenueRoute: typeof InitialSetupCreateVenueRoute
+}
+
+const InitialSetupRouteChildren: InitialSetupRouteChildren = {
+  InitialSetupCreateAdminRoute: InitialSetupCreateAdminRoute,
+  InitialSetupCreateVenueRoute: InitialSetupCreateVenueRoute,
+}
+
+const InitialSetupRouteWithChildren = InitialSetupRoute._addFileChildren(
+  InitialSetupRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  IntialSetup_rootRoute: IntialSetup_rootRoute,
-  IntialSetupCreateAdminRoute: IntialSetupCreateAdminRoute,
-  IntialSetupCreateVenueRoute: IntialSetupCreateVenueRoute,
+  InitialSetupRoute: InitialSetupRouteWithChildren,
   ErrorIndexRoute: ErrorIndexRoute,
 }
 export const routeTree = rootRouteImport
