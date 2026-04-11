@@ -15,11 +15,12 @@ import { useState } from "react";
 import toast from "react-hot-toast";
 import createNewStaff from "@/api-requests/staff/createNewStaff";
 import isSetupDone from "@/api-requests/staff/isSetupDone";
+import ComponentInitialSetup from "@/components/pages/ComponentInitialSetup";
 import { PasswordInput } from "@/components/ui/password-input";
 import { capitilizeString } from "@/utils";
 import type { CreateStaffDto, IsSetupDone } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
-import createAdmin from "../../assets/create-admin.png";
+import createAdminImage from "../../assets/create-admin.png";
 
 export const Route = createFileRoute("/initial-setup/create-admin")({
   beforeLoad: async () => {
@@ -44,7 +45,7 @@ function RouteComponent() {
   const [password, setPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState<boolean>(false);
   const router = useRouter();
 
   const createAdminHandler = async () => {
@@ -62,11 +63,11 @@ function RouteComponent() {
       role: "ADMIN",
     };
 
-    setLoading(true)
+    setLoading(true);
 
     const result = await createNewStaff(requestData);
 
-    setLoading(false)
+    setLoading(false);
 
     if (isApiRequestError(result)) {
       toast.error(
@@ -76,83 +77,84 @@ function RouteComponent() {
     }
 
     if (isAxiosError(result)) {
-      router.navigate({ to: '/error' })
-      return
+      router.navigate({ to: "/error" });
+      return;
     }
 
     toast.success(result.data);
-    router.navigate({ to: '/initial-setup/create-venue' })
-    return
+    router.navigate({ to: "/initial-setup/create-venue" });
+    return;
   };
 
+  const inputs = (
+    <>
+      <Field.Root required>
+        <Field.Label>
+          Email <Field.RequiredIndicator />
+        </Field.Label>
+        <Input
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="Enter your email"
+          variant="flushed"
+        />
+      </Field.Root>
+
+      <Field.Root required>
+        <Field.Label>
+          Name <Field.RequiredIndicator />
+        </Field.Label>
+        <Input
+          onChange={(event) => setName(event.target.value)}
+          placeholder="Enter name"
+          variant="flushed"
+        />
+      </Field.Root>
+
+      <Field.Root required>
+        <Field.Label>
+          Password <Field.RequiredIndicator />
+        </Field.Label>
+        <PasswordInput
+          value={password}
+          placeholder="Enter password"
+          onChange={(e) => setPassword(e.target.value)}
+          variant='flushed'
+        />
+      </Field.Root>
+
+      <Field.Root required>
+        <Field.Label>
+          Confirm Password <Field.RequiredIndicator />
+        </Field.Label>
+        <PasswordInput
+          value={confirmPassword}
+          placeholder="Confirm password"
+          onChange={(e) => setConfirmPassword(e.target.value)}
+          variant='flushed'
+        />
+      </Field.Root>
+    </>
+  );
+
+  const button = (
+    <Button
+      disabled={
+        email === "" || name === "" || password === "" || confirmPassword === ""
+      }
+      onClick={createAdminHandler}
+      loading={loading}
+    >
+      Create Account
+    </Button>
+  );
+
   return (
-    <HStack h="100svh" justifyContent="space-between">
-      <VStack p={8} flex={2} gap={8} alignItems={'flex-start'} >
-        <Box>
-          <Heading textStyle='title' >Let's Get Started</Heading>
-          <Text textStyle='muted' >Create an admin account</Text>
-        </Box>
-
-        <VStack w="full" gap={8} >
-
-          <Field.Root required>
-            <Field.Label>
-              Email <Field.RequiredIndicator />
-            </Field.Label>
-            <Input
-              value={email}
-              placeholder="Enter email"
-              onChange={(e) => setEmail(e.target.value)}
-            ></Input>
-          </Field.Root>
-
-          <Field.Root required>
-            <Field.Label>
-              Name <Field.RequiredIndicator />
-            </Field.Label>
-            <Input
-              value={name}
-              placeholder="Enter name"
-              onChange={(e) => setName(e.target.value)}
-            ></Input>
-          </Field.Root>
-
-          <Field.Root required>
-            <Field.Label>
-              Password <Field.RequiredIndicator />
-            </Field.Label>
-            <PasswordInput
-              value={password}
-              placeholder="Enter password"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </Field.Root>
-
-          <Field.Root required>
-            <Field.Label>
-              Confirm Password <Field.RequiredIndicator />
-            </Field.Label>
-            <PasswordInput
-              value={confirmPassword}
-              placeholder="Confirm password"
-              onChange={(e) => setConfirmPassword(e.target.value)}
-            />
-          </Field.Root>
-        </VStack>
-        <Button
-          disabled={
-            email === "" ||
-            name === "" ||
-            password === "" ||
-            confirmPassword === ""
-          }
-          onClick={createAdminHandler}
-          loading={loading}
-        >
-          Create Account
-        </Button>
-      </VStack>
-      <Image display={['none', null, 'block']} flex={1} h="100svh" src={createAdmin}></Image>
-    </HStack>
+    <ComponentInitialSetup
+      heading="Let's Get Started"
+      subText="Create an admin account"
+      inputs={inputs}
+      button={button}
+      imagePath={createAdminImage}
+    />
   );
 }

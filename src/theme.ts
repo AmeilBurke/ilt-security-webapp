@@ -12,20 +12,23 @@ const config = defineConfig({
             title: {
 
                 value: {
-                    fontSize: {base: '3xl', md: '5xl'},
+                    width: "full",
+                    fontSize: { base: '3xl', md: '5xl' },
                     fontWeight: "700",
-                    marginBottom: {base: 2, md: 6},
-                    lineHeight: 1
+                    marginBottom: { base: 2, md: 6 },
+                    lineHeight: "auto"
                 }
             },
             muted: {
                 value: {
+                    width: "full",
                     color: "gray.600",
                     fontSize: "md",
                 }
             },
             label: {
                 value: {
+                    width: "full",
                     fontWeight: "500",
                     fontSize: "sm",
                 }
