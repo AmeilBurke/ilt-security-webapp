@@ -16,13 +16,12 @@ export const handleApiResult = <T extends object>(
 	router: RegisteredRouter,
 ): result is AxiosResponse<T> => {
 	if (isApiRequestError(result)) {
-		toast.error(
-			`Failed to create an admin account because:\n - ${capitalizeString(result.message.join("\n - "))}`,
-		);
+		toast.error(result.error);
+		router.navigate({ to: "/error", search: { error: result } });
 		return false;
 	}
 	if (isAxiosError(result)) {
-		router.navigate({ to: "/error" });
+		router.navigate({ to: "/error", search: { error: result } });
 		return false;
 	}
 	return true;

@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as InitialSetupRouteImport } from './routes/initial-setup'
+import { Route as CreateAlertRouteImport } from './routes/create-alert'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ErrorIndexRouteImport } from './routes/error/index'
 import { Route as InitialSetupCreateVenueRouteImport } from './routes/initial-setup/create-venue'
@@ -24,6 +25,11 @@ const SignInRoute = SignInRouteImport.update({
 const InitialSetupRoute = InitialSetupRouteImport.update({
   id: '/initial-setup',
   path: '/initial-setup',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateAlertRoute = CreateAlertRouteImport.update({
+  id: '/create-alert',
+  path: '/create-alert',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -49,6 +55,7 @@ const InitialSetupCreateAdminRoute = InitialSetupCreateAdminRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/create-alert': typeof CreateAlertRoute
   '/initial-setup': typeof InitialSetupRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
@@ -57,6 +64,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/create-alert': typeof CreateAlertRoute
   '/initial-setup': typeof InitialSetupRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
@@ -66,6 +74,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/create-alert': typeof CreateAlertRoute
   '/initial-setup': typeof InitialSetupRouteWithChildren
   '/sign-in': typeof SignInRoute
   '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
@@ -76,6 +85,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/create-alert'
     | '/initial-setup'
     | '/sign-in'
     | '/initial-setup/create-admin'
@@ -84,6 +94,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/create-alert'
     | '/initial-setup'
     | '/sign-in'
     | '/initial-setup/create-admin'
@@ -92,6 +103,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/create-alert'
     | '/initial-setup'
     | '/sign-in'
     | '/initial-setup/create-admin'
@@ -101,6 +113,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CreateAlertRoute: typeof CreateAlertRoute
   InitialSetupRoute: typeof InitialSetupRouteWithChildren
   SignInRoute: typeof SignInRoute
   ErrorIndexRoute: typeof ErrorIndexRoute
@@ -120,6 +133,13 @@ declare module '@tanstack/react-router' {
       path: '/initial-setup'
       fullPath: '/initial-setup'
       preLoaderRoute: typeof InitialSetupRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create-alert': {
+      id: '/create-alert'
+      path: '/create-alert'
+      fullPath: '/create-alert'
+      preLoaderRoute: typeof CreateAlertRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -169,6 +189,7 @@ const InitialSetupRouteWithChildren = InitialSetupRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CreateAlertRoute: CreateAlertRoute,
   InitialSetupRoute: InitialSetupRouteWithChildren,
   SignInRoute: SignInRoute,
   ErrorIndexRoute: ErrorIndexRoute,

@@ -1,9 +1,12 @@
-import { Text } from "@chakra-ui/react";
+import { Button, Text } from "@chakra-ui/react";
+import { useRouter } from "@tanstack/react-router";
 import type { Staff } from "@/utils/interfaces";
 
 const PageStaff = ({ staff }: { staff: Staff[] }) => {
+	const router = useRouter();
 	return (
 		<>
+			<Button onClick={() => {router.navigate({to:'/sign-in'})}}>Sign Out</Button>
 			{staff.map((person) => {
 				return (
 					<Text key={person.id}>

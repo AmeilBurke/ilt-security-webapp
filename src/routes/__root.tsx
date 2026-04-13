@@ -1,8 +1,12 @@
 import { Box } from "@chakra-ui/react";
 import { createRootRoute, Outlet, redirect } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
+import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
 import isSetupDone from "@/api-requests/staff/isSetupDone";
 import type { IsSetupDone } from "@/utils/interfaces";
+
+dayjs.extend(customParseFormat);
 
 export const Route = createRootRoute({
 	beforeLoad: async ({ location }) => {

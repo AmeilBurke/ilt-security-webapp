@@ -42,10 +42,8 @@ const ComponentInitialSetup = ({
 		>
 			<VStack w="full" alignItems="start" gap={10}>
 				<VStack w="full" gap={[undefined, undefined, 4]}>
-					<Heading textStyle="title">{heading}</Heading>
+					<Text textStyle="title">{heading}</Text>
 					<Text textStyle="muted">{subText}</Text>
-					{/* <Heading w="full" fontSize={["3xl", undefined, "4xl"]}>{heading}</Heading>
-					<Text w="full" color="gray.600">{subText}</Text> */}
 				</VStack>
 				<VStack
 					w={["full", undefined, "full"]}

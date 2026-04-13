@@ -17,7 +17,7 @@ export const Route = createFileRoute("/initial-setup/create-admin")({
 		const result = await isSetupDone();
 
 		if (isAxiosError(result)) {
-			throw redirect({ to: "/error" });
+			throw redirect({ to: "/error", search: { error: JSON.stringify(result) } });
 		}
 
 		const data = result.data as IsSetupDone;
@@ -69,8 +69,8 @@ function RouteComponent() {
 
 			toast.success(createAdminResult.data);
 			router.navigate({ to: "/initial-setup/create-venue" });
-		} catch {
-			router.navigate({ to: "/error" });
+		} catch(error) {
+			router.navigate({ to: "/error", search: { error: JSON.stringify(error) } });
 		} finally {
 			setLoading(false);
 		}
