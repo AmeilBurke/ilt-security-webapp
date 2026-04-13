@@ -60,26 +60,26 @@ export const Route = createFileRoute("/")({
 				<Text textStyle="title">Dashboard - {tabs.value}</Text>
 				<Text textStyle="muted">Welcome {capitalizeString(user.name)}</Text>
 				<Tabs.Root defaultValue="alerts">
-					<Tabs.List>
-						<Tabs.Trigger value="alerts">
+					<Tabs.List overflowX="auto" whiteSpace="nowrap"  >
+						<Tabs.Trigger value="alerts" flexShrink={0}>
 							<LiaExclamationSolid />
 							Alerts
 						</Tabs.Trigger>
 						{user.role === "ADMIN" ? (
-							<Tabs.Trigger value="pending-bans">
+							<Tabs.Trigger value="pending-bans" flexShrink={0}>
 								<LiaExclamationSolid />
 								Pending Bans
 							</Tabs.Trigger>
 						) : null}
-						<Tabs.Trigger value="blanket-banned">
+						<Tabs.Trigger value="blanket-banned" flexShrink={0}>
 							<LuSquareCheck />
 							Blanket Banned People
 						</Tabs.Trigger>
-						<Tabs.Trigger value="venues">
+						<Tabs.Trigger value="venues" flexShrink={0}>
 							<LuSquareCheck />
 							Venues
 						</Tabs.Trigger>
-						<Tabs.Trigger value="staff">
+						<Tabs.Trigger value="staff" flexShrink={0}>
 							<LuSquareCheck />
 							Staff
 						</Tabs.Trigger>
