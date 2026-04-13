@@ -3,19 +3,18 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewVenue = async (createVenueDto: FormData) => {
+const getAllBlanketBannedPeople = async () => {
 	return await axiosInstance
-		.post("/venues", createVenueDto)
+		.get("/banned-people/blanket-banned")
 		.then((response: AxiosResponse) => {
-			return response;
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {
 				return error.response?.data as ApiRequestError;
 			}
-
 			return error;
 		});
 };
 
-export default createNewVenue;
+export default getAllBlanketBannedPeople;

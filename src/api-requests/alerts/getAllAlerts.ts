@@ -3,11 +3,11 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewVenue = async (createVenueDto: FormData) => {
+const getAllAlerts = async () => {
 	return await axiosInstance
-		.post("/venues", createVenueDto)
+		.get("/alerts")
 		.then((response: AxiosResponse) => {
-			return response;
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {
@@ -18,4 +18,4 @@ const createNewVenue = async (createVenueDto: FormData) => {
 		});
 };
 
-export default createNewVenue;
+export default getAllAlerts;

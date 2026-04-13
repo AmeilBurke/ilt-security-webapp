@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as InitialSetupRouteImport } from './routes/initial-setup'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ErrorIndexRouteImport } from './routes/error/index'
 import { Route as InitialSetupCreateVenueRouteImport } from './routes/initial-setup/create-venue'
 import { Route as InitialSetupCreateAdminRouteImport } from './routes/initial-setup/create-admin'
 
+const SignInRoute = SignInRouteImport.update({
+  id: '/sign-in',
+  path: '/sign-in',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const InitialSetupRoute = InitialSetupRouteImport.update({
   id: '/initial-setup',
   path: '/initial-setup',
@@ -44,6 +50,7 @@ const InitialSetupCreateAdminRoute = InitialSetupCreateAdminRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/initial-setup': typeof InitialSetupRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
   '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
   '/error/': typeof ErrorIndexRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/initial-setup': typeof InitialSetupRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
   '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
   '/error': typeof ErrorIndexRoute
@@ -59,6 +67,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/initial-setup': typeof InitialSetupRouteWithChildren
+  '/sign-in': typeof SignInRoute
   '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
   '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
   '/error/': typeof ErrorIndexRoute
@@ -68,6 +77,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/initial-setup'
+    | '/sign-in'
     | '/initial-setup/create-admin'
     | '/initial-setup/create-venue'
     | '/error/'
@@ -75,6 +85,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/initial-setup'
+    | '/sign-in'
     | '/initial-setup/create-admin'
     | '/initial-setup/create-venue'
     | '/error'
@@ -82,6 +93,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/initial-setup'
+    | '/sign-in'
     | '/initial-setup/create-admin'
     | '/initial-setup/create-venue'
     | '/error/'
@@ -90,11 +102,19 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   InitialSetupRoute: typeof InitialSetupRouteWithChildren
+  SignInRoute: typeof SignInRoute
   ErrorIndexRoute: typeof ErrorIndexRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/sign-in': {
+      id: '/sign-in'
+      path: '/sign-in'
+      fullPath: '/sign-in'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/initial-setup': {
       id: '/initial-setup'
       path: '/initial-setup'
@@ -150,6 +170,7 @@ const InitialSetupRouteWithChildren = InitialSetupRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   InitialSetupRoute: InitialSetupRouteWithChildren,
+  SignInRoute: SignInRoute,
   ErrorIndexRoute: ErrorIndexRoute,
 }
 export const routeTree = rootRouteImport

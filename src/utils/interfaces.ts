@@ -15,48 +15,70 @@ export interface CreateStaffDto {
 }
 
 export interface ApiRequestError {
-	message: string[],
-	error: string,
-	statusCode: number
+	message: string[];
+	error: string;
+	statusCode: number;
 }
 
 export interface VenueManager {
-	id: string
-	userId: string
-	venueId: string
+	id: string;
+	userId: string;
+	venueId: string;
 }
 
 export interface DutyManager {
-	id: string
-	userId: string
-	venueId: string
+	id: string;
+	userId: string;
+	venueId: string;
 }
 
 export interface Ban {
-	id: string
-	personId: string
-	createdById: string
-	reason: string
-	notes?: string
-	startDate: Date
-	duration: BanDuration
-	isBlanketBan: boolean
-	status: BanStatus
+	id: string;
+	personId: string;
+	createdById: string;
+	reason: string;
+	notes?: string;
+	startDate: Date;
+	duration: BanDuration;
+	isBlanketBan: boolean;
+	status: BanStatus;
 }
 
 export interface BannedPerson {
-	id: string
-	name: string
-	imagePath: string
-	bans: Ban[]
+	id: string;
+	name: string;
+	imagePath: string;
+	bans: Ban[];
 }
 
 export interface Staff {
-	id: string
-	email: string
-	name: string
-	role: Role
-	venueManagerAssignments: VenueManager[]
-	dutyManagerAssignments: DutyManager[]
-	bansCreated: Ban[]
+	id: string;
+	email: string;
+	name: string;
+	role: Role;
+	venueManagerAssignments: VenueManager[];
+	dutyManagerAssignments: DutyManager[];
+	bansCreated: Ban[];
+}
+
+export interface Alert {
+	id: string;
+	personId: number | null;
+	reason: string;
+	imagePath: string;
+	startDate: string;
+	createdById: string;
+	createdBy: {
+		name: string;
+	};
+}
+
+export interface Venue {
+	id: string;
+	name: string;
+	imagePath: string;
+	address: string;
+	phone: string;
+	venueManagers: VenueManager[];
+	dutyManagers: DutyManager[];
 }

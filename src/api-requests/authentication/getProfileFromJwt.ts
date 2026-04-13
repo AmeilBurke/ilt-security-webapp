@@ -3,9 +3,9 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewVenue = async (createVenueDto: FormData) => {
+const getProfileFromJwt = async (jwtToken: string) => {
 	return await axiosInstance
-		.post("/venues", createVenueDto)
+		.get("/authentication/profile")
 		.then((response: AxiosResponse) => {
 			return response;
 		})
@@ -18,4 +18,4 @@ const createNewVenue = async (createVenueDto: FormData) => {
 		});
 };
 
-export default createNewVenue;
+export default getProfileFromJwt;
