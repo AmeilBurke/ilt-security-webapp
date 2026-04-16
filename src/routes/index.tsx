@@ -61,7 +61,7 @@ export const Route = createFileRoute("/")({
 				<Text textStyle="muted">Welcome {capitalizeString(user.name)}</Text>
 				<Tabs.Root defaultValue="alerts">
 					<Tabs.List overflowX="auto" whiteSpace="nowrap"  >
-						<Tabs.Trigger value="alerts" flexShrink={0}>
+						<Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden" >
 							<LiaExclamationSolid />
 							Alerts
 						</Tabs.Trigger>

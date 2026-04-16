@@ -18,7 +18,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { type AxiosError, isAxiosError } from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { LiaArrowLeftSolid } from "react-icons/lia";
+import { LiaArrowLeftSolid, LiaBackspaceSolid } from "react-icons/lia";
 import { LuChevronRight, LuFileUp } from "react-icons/lu";
 import createNewAlert from "@/api-requests/alerts/createNewAlert";
 import getAllBannedPeople from "@/api-requests/banned-people/getAllBannedPeople";
@@ -101,22 +101,24 @@ function RouteComponent() {
 
   return (
     <ContentContainer>
-      <VStack gap={4} alignItems='flex-start' >
-        <IconButton variant='ghost' onClick={() => router.navigate({ to: "/" })} >
+      <VStack gap={8} alignItems="flex-start">
+        <IconButton
+          variant="ghost"
+          onClick={() => router.navigate({ to: "/" })}
+        >
           <LiaArrowLeftSolid />
         </IconButton>
 
-        <VStack w="full">
+        <VStack w="full" gap={0} >
           <Text textStyle="title">Create Alert</Text>
-          <Text textStyle="muted">
-            Fill in the details below to create an alert
-          </Text>
+          <Text textStyle="muted">Fill in the details below to create an alert</Text>
         </VStack>
-        <Collapsible.Root w="full">
+        <Collapsible.Root w="full" px={2} borderBottomColor='blackAlpha.300' borderWidth='1px'>
           <Collapsible.Trigger
-            paddingY="3"
+            w="full"
+            paddingY={0}
             display="flex"
-            gap="2"
+            gap={2}
             alignItems="center"
           >
             <Collapsible.Indicator
@@ -125,15 +127,19 @@ function RouteComponent() {
             >
               <LuChevronRight />
             </Collapsible.Indicator>
-            <Text>
+            <Text w="full" textAlign="start" fontSize='sm' >
               {selectedBannedPerson
                 ? capitalizeString(selectedBannedPerson.name)
-                : "Person has an active or expired ban"}
+                : "Alert is for someone in system"}
             </Text>
+
+            <IconButton opacity={selectedBannedPerson ? 100 : 0} variant="ghost" onClick={handleClear}>
+              <LiaBackspaceSolid />
+            </IconButton>
           </Collapsible.Trigger>
 
           <Collapsible.Content>
-            <Stack padding="4" borderWidth="1px">
+            <Stack padding={4} gap={8} >
               <Input
                 placeholder="Search people"
                 value={bannedPersonSearch}
@@ -144,12 +150,7 @@ function RouteComponent() {
                 value={selectedBannedPerson?.id ?? ""}
                 onValueChange={(e) => handlePersonSelect(String(e.value))}
               >
-                <VStack w="full" gap="6">
-                  {selectedBannedPerson && (
-                    <Button w="full" onClick={handleClear}>
-                      Clear
-                    </Button>
-                  )}
+                <VStack w="full" gap={8}>
 
                   {bannedPeopleFiltered.map((person) => (
                     <RadioGroup.Item
@@ -238,6 +239,6 @@ function RouteComponent() {
           Upload Alert
         </Button>
       </VStack>
-    </ContentContainer >
+    </ContentContainer>
   );
 }
