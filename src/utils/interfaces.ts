@@ -14,6 +14,12 @@ export interface CreateStaffDto {
 	dutyManagerAssignments?: string[];
 }
 
+export type CreateAlertDto = {
+	reason: string;
+	personId?: string;
+	imagePath?: string;
+};
+
 export interface ApiRequestError {
 	message: string[];
 	error: string;

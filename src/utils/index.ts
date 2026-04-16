@@ -4,11 +4,11 @@ import toast from "react-hot-toast";
 import type { ApiRequestError } from "./interfaces";
 import { isApiRequestError } from "./isApiRequestError";
 
-export const capitalizeString = (textToCapitilize: string) => {
-	return textToCapitilize.replace(
-		textToCapitilize.charAt(0),
-		textToCapitilize.charAt(0).toUpperCase(),
-	);
+export const capitalizeString = (textToCapitalize: string) => {
+	return textToCapitalize
+		.split(' ')
+		.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+		.join(' ');
 };
 
 export const handleApiResult = <T extends object>(
