@@ -37,7 +37,12 @@ export const Route = createFileRoute("/create-alert")({
       return [];
     }
 
-    return allBannedPeople;
+
+    const allBannedPeopleWithoutAlerts = allBannedPeople.filter((person) => {
+      console.log(person)
+      return person.alerts.length === 0
+    })
+    return allBannedPeopleWithoutAlerts;
   },
 });
 
@@ -113,70 +118,74 @@ function RouteComponent() {
           <Text textStyle="title">Create Alert</Text>
           <Text textStyle="muted">Fill in the details below to create an alert</Text>
         </VStack>
-        <Collapsible.Root w="full" px={2} borderBottomColor='blackAlpha.300' borderWidth='1px'>
-          <Collapsible.Trigger
-            w="full"
-            paddingY={0}
-            display="flex"
-            gap={2}
-            alignItems="center"
-          >
-            <Collapsible.Indicator
-              transition="transform 0.2s"
-              _open={{ transform: "rotate(90deg)" }}
-            >
-              <LuChevronRight />
-            </Collapsible.Indicator>
-            <Text w="full" textAlign="start" fontSize='sm' >
-              {selectedBannedPerson
-                ? capitalizeString(selectedBannedPerson.name)
-                : "Alert is for someone in system"}
-            </Text>
-
-            <IconButton opacity={selectedBannedPerson ? 100 : 0} variant="ghost" onClick={handleClear}>
-              <LiaBackspaceSolid />
-            </IconButton>
-          </Collapsible.Trigger>
-
-          <Collapsible.Content>
-            <Stack padding={4} gap={8} >
-              <Input
-                placeholder="Search people"
-                value={bannedPersonSearch}
-                onChange={(e) => setBannedPersonSearch(e.target.value)}
-              />
-
-              <RadioGroup.Root
-                value={selectedBannedPerson?.id ?? ""}
-                onValueChange={(e) => handlePersonSelect(String(e.value))}
+        {
+          allBannedPeople.every((person) => { return person.alerts.length === 1 })
+            ? null
+            : <Collapsible.Root w="full" px={2} borderBottomColor='blackAlpha.300' borderWidth='1px'>
+              <Collapsible.Trigger
+                w="full"
+                paddingY={0}
+                display="flex"
+                gap={2}
+                alignItems="center"
               >
-                <VStack w="full" gap={8}>
+                <Collapsible.Indicator
+                  transition="transform 0.2s"
+                  _open={{ transform: "rotate(90deg)" }}
+                >
+                  <LuChevronRight />
+                </Collapsible.Indicator>
+                <Text w="full" textAlign="start" fontSize='sm' >
+                  {selectedBannedPerson
+                    ? capitalizeString(selectedBannedPerson.name)
+                    : "Alert is for someone in system"}
+                </Text>
 
-                  {bannedPeopleFiltered.map((person) => (
-                    <RadioGroup.Item
-                      w="full"
-                      key={person.id}
-                      value={person.id}
-                      alignItems="center"
-                    >
-                      <RadioGroup.ItemHiddenInput />
-                      <RadioGroup.ItemIndicator />
-                      <RadioGroup.ItemText>
-                        <HStack gap={4}>
-                          <Avatar.Root size="lg">
-                            <Avatar.Fallback name={person.name} />
-                            <Avatar.Image src={person.imagePath} />
-                          </Avatar.Root>
-                          <Text>{capitalizeString(person.name)}</Text>
-                        </HStack>
-                      </RadioGroup.ItemText>
-                    </RadioGroup.Item>
-                  ))}
-                </VStack>
-              </RadioGroup.Root>
-            </Stack>
-          </Collapsible.Content>
-        </Collapsible.Root>
+                <IconButton opacity={selectedBannedPerson ? 100 : 0} variant="ghost" onClick={handleClear}>
+                  <LiaBackspaceSolid />
+                </IconButton>
+              </Collapsible.Trigger>
+
+              <Collapsible.Content>
+                <Stack padding={4} gap={8} >
+                  <Input
+                    placeholder="Search people"
+                    value={bannedPersonSearch}
+                    onChange={(e) => setBannedPersonSearch(e.target.value)}
+                  />
+
+                  <RadioGroup.Root
+                    value={selectedBannedPerson?.id ?? ""}
+                    onValueChange={(e) => handlePersonSelect(String(e.value))}
+                  >
+                    <VStack w="full" gap={8}>
+
+                      {bannedPeopleFiltered.map((person) => (
+                        <RadioGroup.Item
+                          w="full"
+                          key={person.id}
+                          value={person.id}
+                          alignItems="center"
+                        >
+                          <RadioGroup.ItemHiddenInput />
+                          <RadioGroup.ItemIndicator />
+                          <RadioGroup.ItemText>
+                            <HStack gap={4}>
+                              <Avatar.Root size="lg">
+                                <Avatar.Fallback name={person.name} />
+                                <Avatar.Image src={person.imagePath} />
+                              </Avatar.Root>
+                              <Text>{capitalizeString(person.name)}</Text>
+                            </HStack>
+                          </RadioGroup.ItemText>
+                        </RadioGroup.Item>
+                      ))}
+                    </VStack>
+                  </RadioGroup.Root>
+                </Stack>
+              </Collapsible.Content>
+            </Collapsible.Root>
+        }
 
         {selectedBannedPerson !== undefined ? null : (
           <FileUpload.Root

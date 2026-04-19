@@ -14,7 +14,7 @@ import {
 import { useRouter } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import dayjs from "dayjs";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import toast from "react-hot-toast";
 import { CiMenuKebab } from "react-icons/ci";
 import deleteAlertById from "@/api-requests/alerts/deleteAlertById";
@@ -44,6 +44,7 @@ const PageAlerts = ({ alerts }: { alerts: Alert[] }) => {
 			toast.error("Could not get updated alerts, try again later");
 			return;
 		}
+
 		await router.invalidate();
 	};
 

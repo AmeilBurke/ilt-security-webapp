@@ -55,6 +55,7 @@ export interface BannedPerson {
 	name: string;
 	imagePath: string;
 	bans: Ban[];
+	alerts: Alert[];
 }
 
 export interface Staff {
