@@ -18,24 +18,23 @@ import ComponentInitialSetup from "@/components/pages/ComponentInitialSetup";
 import { capitalizeString } from "@/utils";
 import type { IsSetupDone } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
-import createVenueImage from "../../assets/create-venue.png";
+import createVenueImage from "../../assets/create-venue.png"
 
-export const Route = createFileRoute("/initial-setup/create-venue")({
+export const Route = createFileRoute("/create/venue")({
 	beforeLoad: async () => {
 		const result = await isSetupDone();
 
 		if (isAxiosError(result)) {
-			throw redirect({ to: "/error" });
+			throw redirect({
+				to: "/error",
+				search: { error: result.message }
+			});
 		}
 
 		const data = result.data as IsSetupDone;
 
 		if (!data.isInitialAdminCreated) {
-			throw redirect({ to: "/initial-setup/create-admin" });
-		}
-
-		if (data.isInitialVenueCreated) {
-			throw redirect({ to: "/" });
+			throw redirect({ to: "/create/venue" });
 		}
 	},
 	component: RouteComponent,
@@ -53,7 +52,7 @@ function RouteComponent() {
 	const createVenueHandler = async () => {
 		if (!venueImage) {
 			toast.error("No image was uploaded");
-			return;
+			return
 		}
 
 		const createVenueDto = new FormData();
@@ -63,27 +62,34 @@ function RouteComponent() {
 		createVenueDto.append("phone", phone);
 
 		setLoading(true);
+		console.log(createVenueDto)
 
 		const result = await createNewVenue(createVenueDto);
+
+		console.log(result)
+
 
 		setLoading(false);
 
 		if (isApiRequestError(result)) {
 			toast.error(
-				`Failed to create an admin account because:\n - ${capitalizeString(result.message.join("\n"))}`,
-			);
-			return;
+				`Failed to create an admin account because:\n - ${capitalizeString(result.message.join(`\n`))}`,
+			)
+			return
 		}
 
 		if (isAxiosError(result)) {
-			router.navigate({ to: "/error" });
-			return;
+			router.navigate({
+				to: "/error",
+				search: { error: result.message }
+			});
+			return
 		}
 
 		toast.success(`${result.data.name} was created`);
 		router.navigate({ to: "/" });
 		return;
-	};
+	}
 
 	const inputs = (
 		<>
@@ -157,7 +163,7 @@ function RouteComponent() {
 				/>
 			</Field.Root>
 		</>
-	);
+	)
 
 	const button = (
 		<Button
@@ -172,7 +178,7 @@ function RouteComponent() {
 		>
 			Create Account
 		</Button>
-	);
+	)
 
 	return (
 		<ComponentInitialSetup
@@ -182,5 +188,5 @@ function RouteComponent() {
 			button={button}
 			imagePath={createVenueImage}
 		/>
-	);
+	)
 }

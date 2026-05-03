@@ -10,26 +10,18 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignInRouteImport } from './routes/sign-in'
-import { Route as InitialSetupRouteImport } from './routes/initial-setup'
-import { Route as CreateAlertRouteImport } from './routes/create-alert'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ErrorIndexRouteImport } from './routes/error/index'
-import { Route as InitialSetupCreateVenueRouteImport } from './routes/initial-setup/create-venue'
-import { Route as InitialSetupCreateAdminRouteImport } from './routes/initial-setup/create-admin'
+import { Route as CreateVenueRouteImport } from './routes/create/venue'
+import { Route as CreateStaffRouteImport } from './routes/create/staff'
+import { Route as CreateBannedPersonRouteImport } from './routes/create/bannedPerson'
+import { Route as CreateBanRouteImport } from './routes/create/ban'
+import { Route as CreateAlertRouteImport } from './routes/create/alert'
+import { Route as CreateAdminRouteImport } from './routes/create/admin'
 
 const SignInRoute = SignInRouteImport.update({
   id: '/sign-in',
   path: '/sign-in',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const InitialSetupRoute = InitialSetupRouteImport.update({
-  id: '/initial-setup',
-  path: '/initial-setup',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const CreateAlertRoute = CreateAlertRouteImport.update({
-  id: '/create-alert',
-  path: '/create-alert',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -42,80 +34,116 @@ const ErrorIndexRoute = ErrorIndexRouteImport.update({
   path: '/error/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const InitialSetupCreateVenueRoute = InitialSetupCreateVenueRouteImport.update({
-  id: '/create-venue',
-  path: '/create-venue',
-  getParentRoute: () => InitialSetupRoute,
+const CreateVenueRoute = CreateVenueRouteImport.update({
+  id: '/create/venue',
+  path: '/create/venue',
+  getParentRoute: () => rootRouteImport,
 } as any)
-const InitialSetupCreateAdminRoute = InitialSetupCreateAdminRouteImport.update({
-  id: '/create-admin',
-  path: '/create-admin',
-  getParentRoute: () => InitialSetupRoute,
+const CreateStaffRoute = CreateStaffRouteImport.update({
+  id: '/create/staff',
+  path: '/create/staff',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateBannedPersonRoute = CreateBannedPersonRouteImport.update({
+  id: '/create/bannedPerson',
+  path: '/create/bannedPerson',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateBanRoute = CreateBanRouteImport.update({
+  id: '/create/ban',
+  path: '/create/ban',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateAlertRoute = CreateAlertRouteImport.update({
+  id: '/create/alert',
+  path: '/create/alert',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CreateAdminRoute = CreateAdminRouteImport.update({
+  id: '/create/admin',
+  path: '/create/admin',
+  getParentRoute: () => rootRouteImport,
 } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
-  '/create-alert': typeof CreateAlertRoute
-  '/initial-setup': typeof InitialSetupRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
-  '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
+  '/create/admin': typeof CreateAdminRoute
+  '/create/alert': typeof CreateAlertRoute
+  '/create/ban': typeof CreateBanRoute
+  '/create/bannedPerson': typeof CreateBannedPersonRoute
+  '/create/staff': typeof CreateStaffRoute
+  '/create/venue': typeof CreateVenueRoute
   '/error/': typeof ErrorIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
-  '/create-alert': typeof CreateAlertRoute
-  '/initial-setup': typeof InitialSetupRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
-  '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
+  '/create/admin': typeof CreateAdminRoute
+  '/create/alert': typeof CreateAlertRoute
+  '/create/ban': typeof CreateBanRoute
+  '/create/bannedPerson': typeof CreateBannedPersonRoute
+  '/create/staff': typeof CreateStaffRoute
+  '/create/venue': typeof CreateVenueRoute
   '/error': typeof ErrorIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
-  '/create-alert': typeof CreateAlertRoute
-  '/initial-setup': typeof InitialSetupRouteWithChildren
   '/sign-in': typeof SignInRoute
-  '/initial-setup/create-admin': typeof InitialSetupCreateAdminRoute
-  '/initial-setup/create-venue': typeof InitialSetupCreateVenueRoute
+  '/create/admin': typeof CreateAdminRoute
+  '/create/alert': typeof CreateAlertRoute
+  '/create/ban': typeof CreateBanRoute
+  '/create/bannedPerson': typeof CreateBannedPersonRoute
+  '/create/staff': typeof CreateStaffRoute
+  '/create/venue': typeof CreateVenueRoute
   '/error/': typeof ErrorIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
-    | '/create-alert'
-    | '/initial-setup'
     | '/sign-in'
-    | '/initial-setup/create-admin'
-    | '/initial-setup/create-venue'
+    | '/create/admin'
+    | '/create/alert'
+    | '/create/ban'
+    | '/create/bannedPerson'
+    | '/create/staff'
+    | '/create/venue'
     | '/error/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
-    | '/create-alert'
-    | '/initial-setup'
     | '/sign-in'
-    | '/initial-setup/create-admin'
-    | '/initial-setup/create-venue'
+    | '/create/admin'
+    | '/create/alert'
+    | '/create/ban'
+    | '/create/bannedPerson'
+    | '/create/staff'
+    | '/create/venue'
     | '/error'
   id:
     | '__root__'
     | '/'
-    | '/create-alert'
-    | '/initial-setup'
     | '/sign-in'
-    | '/initial-setup/create-admin'
-    | '/initial-setup/create-venue'
+    | '/create/admin'
+    | '/create/alert'
+    | '/create/ban'
+    | '/create/bannedPerson'
+    | '/create/staff'
+    | '/create/venue'
     | '/error/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
-  CreateAlertRoute: typeof CreateAlertRoute
-  InitialSetupRoute: typeof InitialSetupRouteWithChildren
   SignInRoute: typeof SignInRoute
+  CreateAdminRoute: typeof CreateAdminRoute
+  CreateAlertRoute: typeof CreateAlertRoute
+  CreateBanRoute: typeof CreateBanRoute
+  CreateBannedPersonRoute: typeof CreateBannedPersonRoute
+  CreateStaffRoute: typeof CreateStaffRoute
+  CreateVenueRoute: typeof CreateVenueRoute
   ErrorIndexRoute: typeof ErrorIndexRoute
 }
 
@@ -126,20 +154,6 @@ declare module '@tanstack/react-router' {
       path: '/sign-in'
       fullPath: '/sign-in'
       preLoaderRoute: typeof SignInRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/initial-setup': {
-      id: '/initial-setup'
-      path: '/initial-setup'
-      fullPath: '/initial-setup'
-      preLoaderRoute: typeof InitialSetupRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/create-alert': {
-      id: '/create-alert'
-      path: '/create-alert'
-      fullPath: '/create-alert'
-      preLoaderRoute: typeof CreateAlertRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -156,42 +170,60 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ErrorIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/initial-setup/create-venue': {
-      id: '/initial-setup/create-venue'
-      path: '/create-venue'
-      fullPath: '/initial-setup/create-venue'
-      preLoaderRoute: typeof InitialSetupCreateVenueRouteImport
-      parentRoute: typeof InitialSetupRoute
+    '/create/venue': {
+      id: '/create/venue'
+      path: '/create/venue'
+      fullPath: '/create/venue'
+      preLoaderRoute: typeof CreateVenueRouteImport
+      parentRoute: typeof rootRouteImport
     }
-    '/initial-setup/create-admin': {
-      id: '/initial-setup/create-admin'
-      path: '/create-admin'
-      fullPath: '/initial-setup/create-admin'
-      preLoaderRoute: typeof InitialSetupCreateAdminRouteImport
-      parentRoute: typeof InitialSetupRoute
+    '/create/staff': {
+      id: '/create/staff'
+      path: '/create/staff'
+      fullPath: '/create/staff'
+      preLoaderRoute: typeof CreateStaffRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create/bannedPerson': {
+      id: '/create/bannedPerson'
+      path: '/create/bannedPerson'
+      fullPath: '/create/bannedPerson'
+      preLoaderRoute: typeof CreateBannedPersonRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create/ban': {
+      id: '/create/ban'
+      path: '/create/ban'
+      fullPath: '/create/ban'
+      preLoaderRoute: typeof CreateBanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create/alert': {
+      id: '/create/alert'
+      path: '/create/alert'
+      fullPath: '/create/alert'
+      preLoaderRoute: typeof CreateAlertRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/create/admin': {
+      id: '/create/admin'
+      path: '/create/admin'
+      fullPath: '/create/admin'
+      preLoaderRoute: typeof CreateAdminRouteImport
+      parentRoute: typeof rootRouteImport
     }
   }
 }
 
-interface InitialSetupRouteChildren {
-  InitialSetupCreateAdminRoute: typeof InitialSetupCreateAdminRoute
-  InitialSetupCreateVenueRoute: typeof InitialSetupCreateVenueRoute
-}
-
-const InitialSetupRouteChildren: InitialSetupRouteChildren = {
-  InitialSetupCreateAdminRoute: InitialSetupCreateAdminRoute,
-  InitialSetupCreateVenueRoute: InitialSetupCreateVenueRoute,
-}
-
-const InitialSetupRouteWithChildren = InitialSetupRoute._addFileChildren(
-  InitialSetupRouteChildren,
-)
-
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
-  CreateAlertRoute: CreateAlertRoute,
-  InitialSetupRoute: InitialSetupRouteWithChildren,
   SignInRoute: SignInRoute,
+  CreateAdminRoute: CreateAdminRoute,
+  CreateAlertRoute: CreateAlertRoute,
+  CreateBanRoute: CreateBanRoute,
+  CreateBannedPersonRoute: CreateBannedPersonRoute,
+  CreateStaffRoute: CreateStaffRoute,
+  CreateVenueRoute: CreateVenueRoute,
   ErrorIndexRoute: ErrorIndexRoute,
 }
 export const routeTree = rootRouteImport

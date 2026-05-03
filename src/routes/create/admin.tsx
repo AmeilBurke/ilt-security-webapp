@@ -6,24 +6,24 @@ import toast from "react-hot-toast";
 import getJwt from "@/api-requests/authentication/getJwt";
 import createNewStaff from "@/api-requests/staff/createNewStaff";
 import isSetupDone from "@/api-requests/staff/isSetupDone";
-import ComponentInitialSetup from "@/components/pages/ComponentInitialSetup";
+import PageCreate from "@/components/pages/PageCreate";
 import { PasswordInput } from "@/components/ui/password-input";
 import { handleApiResult } from "@/utils";
 import type { IsSetupDone } from "@/utils/interfaces";
 import createAdminImage from "../../assets/create-admin.png";
 
-export const Route = createFileRoute("/initial-setup/create-admin")({
+export const Route = createFileRoute("/create/admin")({
 	beforeLoad: async () => {
 		const result = await isSetupDone();
 
 		if (isAxiosError(result)) {
-			throw redirect({ to: "/error", search: { error: JSON.stringify(result) } });
+			throw redirect({ to: "/error", search: { error: result.message } });
 		}
 
 		const data = result.data as IsSetupDone;
 
 		if (data.isInitialAdminCreated) {
-			throw redirect({ to: "/initial-setup/create-venue" });
+			throw redirect({ to: "/" });
 		}
 	},
 	component: RouteComponent,
@@ -68,9 +68,12 @@ function RouteComponent() {
 			localStorage.setItem("jwt", jwtResult.data.access_token);
 
 			toast.success(createAdminResult.data);
-			router.navigate({ to: "/initial-setup/create-venue" });
-		} catch(error) {
-			router.navigate({ to: "/error", search: { error: JSON.stringify(error) } });
+			router.navigate({ to: "/create/venue" });
+		} catch (error) {
+			router.navigate({
+				to: "/error",
+				search: { error: JSON.stringify(error) },
+			});
 		} finally {
 			setLoading(false);
 		}
@@ -139,7 +142,7 @@ function RouteComponent() {
 	);
 
 	return (
-		<ComponentInitialSetup
+		<PageCreate
 			heading="Let's Get Started"
 			subText="Create an admin account"
 			inputs={inputs}

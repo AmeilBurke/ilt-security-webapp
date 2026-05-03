@@ -3,7 +3,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const getProfileFromJwt = async (jwtToken: string) => {
+const getProfileFromJwt = async () => {
 	return await axiosInstance
 		.get("/authentication/profile")
 		.then((response: AxiosResponse) => {

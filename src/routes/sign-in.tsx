@@ -31,9 +31,9 @@ function RouteComponent() {
 			localStorage.setItem("jwt", jwtResult.data.access_token);
 			toast.success("Sign in successful");
 			router.navigate({ to: "/" });
-		} catch (error) {
+		} catch (error: unknown) {
 			console.log(error)
-			router.navigate({ to: "/error", search: { error: error } });
+			router.navigate({ to: "/error", search: { error: String(error) } });
 		} finally {
 			setLoading(false);
 		}

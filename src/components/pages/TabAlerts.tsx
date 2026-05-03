@@ -23,7 +23,7 @@ import { capitalizeString } from "@/utils";
 import type { Alert } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const PageAlerts = ({ alerts }: { alerts: Alert[] }) => {
+const TabAlerts = ({ alerts }: { alerts: Alert[] }) => {
 	const [selectedAlertId, setSelectedAlertId] = useState<string>("");
 	const router = useRouter();
 
@@ -50,7 +50,7 @@ const PageAlerts = ({ alerts }: { alerts: Alert[] }) => {
 
 	return (
 		<VStack w="full" gap={4}>
-			<Button w="full" onClick={() => router.navigate({ to: "/create-alert" })}>
+			<Button w="full" onClick={() => router.navigate({ to: "/create/alert" })}>
 				Create New Alert
 			</Button>
 
@@ -93,7 +93,7 @@ const PageAlerts = ({ alerts }: { alerts: Alert[] }) => {
 								</HStack>
 								<Text fontSize="small" color="gray.500">
 									Uploaded by {capitalizeString(alert.createdBy.name)} @{" "}
-									{dayjs(alert.startDate).format("hh:mm:A")}
+									{dayjs(alert.startDate).format("hh:mm a")}
 								</Text>
 							</VStack>
 						</VStack>
@@ -102,8 +102,10 @@ const PageAlerts = ({ alerts }: { alerts: Alert[] }) => {
 			)}
 
 			<Dialog.Root
-				size="full"
+				size="xl"
+				placement="center"
 				role="alertdialog"
+				closeOnInteractOutside={true}
 				open={selectedAlertId !== ""}
 				onOpenChange={(e) => {
 					if (!e.open) {
@@ -149,4 +151,4 @@ const PageAlerts = ({ alerts }: { alerts: Alert[] }) => {
 	);
 };
 
-export default PageAlerts;
+export default TabAlerts;

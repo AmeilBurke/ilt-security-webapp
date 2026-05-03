@@ -9,17 +9,19 @@ import getAllBlanketBannedPeople from "@/api-requests/banned-people/getAllBlanke
 import getAllWithPendingBan from "@/api-requests/banned-people/getAllWithPendingBan";
 import getAllStaff from "@/api-requests/staff/getAllStaff";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
-import PageAlerts from "@/components/pages/PageAlerts";
-import PageBlanketBannedPeople from "@/components/pages/PageBlanketBannedPeople";
-import PagePendingBans from "@/components/pages/PagePendingBans";
-import PageStaff from "@/components/pages/PageStaff";
-import PageVenues from "@/components/pages/PageVenues";
+import PageAlerts from "@/components/pages/TabAlerts";
+import PageBanIndex from "@/components/pages/TabBans";
+import PageBlanketBans from "@/components/pages/TabBlanketBans";
+import PagePendingBans from "@/components/pages/TabPendingBans";
+import PageStaff from "@/components/pages/TabStaff";
+import PageVenues from "@/components/pages/TabVenues";
 import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString } from "@/utils";
 import type { Staff } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
 export const Route = createFileRoute("/")({
+	errorComponent: ({ error }) => <div>{String(error)}</div>,
 	beforeLoad: async () => {
 		const jwtToken = localStorage.getItem("jwt");
 
@@ -27,7 +29,8 @@ export const Route = createFileRoute("/")({
 			throw redirect({ to: "/sign-in" });
 		}
 
-		const result = await getProfileFromJwt(jwtToken);
+		const result = await getProfileFromJwt();
+		console.log(result)
 
 		if (isApiRequestError(result) || isAxiosError(result)) {
 			throw redirect({ to: "/sign-in" });
@@ -36,32 +39,34 @@ export const Route = createFileRoute("/")({
 		return { staff: result.data as Staff };
 	},
 	loader: async () => {
-		const [alerts, pendingBans, blanketBanned, venues, staff] =
-			await Promise.all([
+		const [alerts, pendingBans, blanketBans, venues, staff] = await Promise.all(
+			[
 				getAllAlerts(),
 				getAllWithPendingBan(),
 				getAllBlanketBannedPeople(),
 				getAllVenues(),
 				getAllStaff(),
-			]);
-		return { alerts, pendingBans, blanketBanned, venues, staff };
+			],
+		);
+
+		return { alerts, pendingBans, blanketBans, venues, staff };
 	},
 	component: () => {
 		const tabs = useTabs({
-			defaultValue: "Alerts",
+			defaultValue: "alerts",
 		});
 
 		const { staff: user } = Route.useRouteContext();
-		const { alerts, pendingBans, blanketBanned, venues, staff } =
+		const { alerts, pendingBans, blanketBans, venues, staff } =
 			Route.useLoaderData();
 
 		return (
 			<ContentContainer>
-				<Text textStyle="title">Dashboard - {tabs.value}</Text>
+				<Text textStyle="title" textTransform='capitalize' >Dashboard - {tabs.value}</Text>
 				<Text textStyle="muted">Welcome {capitalizeString(user.name)}</Text>
 				<Tabs.Root defaultValue="alerts">
-					<Tabs.List overflowX="auto" whiteSpace="nowrap"  >
-						<Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden" >
+					<Tabs.List overflowX="auto" overflowY="hidden" whiteSpace="nowrap">
+						<Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden">
 							<LiaExclamationSolid />
 							Alerts
 						</Tabs.Trigger>
@@ -71,9 +76,13 @@ export const Route = createFileRoute("/")({
 								Pending Bans
 							</Tabs.Trigger>
 						) : null}
-						<Tabs.Trigger value="blanket-banned" flexShrink={0}>
+						<Tabs.Trigger value="bans" flexShrink={0}>
 							<LuSquareCheck />
-							Blanket Banned People
+							Bans
+						</Tabs.Trigger>
+						<Tabs.Trigger value="blanket-bans" flexShrink={0}>
+							<LuSquareCheck />
+							Blanket Bans
 						</Tabs.Trigger>
 						<Tabs.Trigger value="venues" flexShrink={0}>
 							<LuSquareCheck />
@@ -101,11 +110,15 @@ export const Route = createFileRoute("/")({
 						)}
 					</Tabs.Content>
 
-					<Tabs.Content value="blanket-banned">
-						{isApiRequestError(blanketBanned) || isAxiosError(blanketBanned) ? (
-							<Text>Cannot fetch blanket bans</Text>
+					<Tabs.Content value="bans">
+						<PageBanIndex />
+					</Tabs.Content>
+
+					<Tabs.Content value="balnket-bans">
+						{isApiRequestError(blanketBans) || isAxiosError(blanketBans) ? (
+							<Text>Cannot fetch pending bans</Text>
 						) : (
-							<PageBlanketBannedPeople blanketBanned={blanketBanned} />
+							<PageBlanketBans blanketBans={blanketBans} />
 						)}
 					</Tabs.Content>
 

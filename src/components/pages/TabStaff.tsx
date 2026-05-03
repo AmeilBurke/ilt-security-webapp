@@ -2,7 +2,7 @@ import { Button, Text } from "@chakra-ui/react";
 import { useRouter } from "@tanstack/react-router";
 import type { Staff } from "@/utils/interfaces";
 
-const PageStaff = ({ staff }: { staff: Staff[] }) => {
+const TabStaff = ({ staff }: { staff: Staff[] }) => {
 	const router = useRouter();
 	return (
 		<>
@@ -18,4 +18,4 @@ const PageStaff = ({ staff }: { staff: Staff[] }) => {
 	);
 };
 
-export default PageStaff;
+export default TabStaff;

@@ -27,7 +27,7 @@ import { capitalizeString } from "@/utils";
 import type { ApiRequestError, BannedPerson } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-export const Route = createFileRoute("/create-alert")({
+export const Route = createFileRoute("/create/alert")({
   component: RouteComponent,
   loader: async () => {
     const allBannedPeople: BannedPerson[] | ApiRequestError | AxiosError =

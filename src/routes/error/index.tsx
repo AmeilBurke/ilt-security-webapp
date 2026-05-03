@@ -5,7 +5,7 @@ import { isApiRequestError } from "@/utils/isApiRequestError";
 
 export const Route = createFileRoute("/error/")({
 	validateSearch: (search) => ({
-		error: search.error,
+		error: search.error as string | undefined,
 	}),
 	component: RouteComponent,
 });

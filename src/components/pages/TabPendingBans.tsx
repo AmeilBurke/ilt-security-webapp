@@ -1,14 +1,10 @@
 import { Text } from "@chakra-ui/react";
 import type { BannedPerson } from "@/utils/interfaces";
 
-const PageBlanketBannedPeople = ({
-	blanketBanned,
-}: {
-	blanketBanned: BannedPerson[];
-}) => {
+const TabPendingBans = ({ pendingBans }: { pendingBans: BannedPerson[] }) => {
 	return (
 		<>
-			{blanketBanned.map((person) => {
+			{pendingBans.map((person) => {
 				return (
 					<Text key={person.id}>
 						{person.id} : {person.name}
@@ -19,4 +15,4 @@ const PageBlanketBannedPeople = ({
 	);
 };
 
-export default PageBlanketBannedPeople;
+export default TabPendingBans;
