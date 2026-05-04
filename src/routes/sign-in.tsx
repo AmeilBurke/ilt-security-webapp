@@ -3,7 +3,7 @@ import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import getJwt from "@/api-requests/authentication/getJwt";
-import ComponentInitialSetup from "@/components/pages/ComponentInitialSetup";
+import PageCreate from "@/components/pages/PageCreate";
 import { PasswordInput } from "@/components/ui/password-input";
 import { handleApiResult } from "@/utils";
 import signInImage from "../assets/sign-in.webp";
@@ -32,7 +32,7 @@ function RouteComponent() {
 			toast.success("Sign in successful");
 			router.navigate({ to: "/" });
 		} catch (error: unknown) {
-			console.log(error)
+			console.log(error);
 			router.navigate({ to: "/error", search: { error: String(error) } });
 		} finally {
 			setLoading(false);
@@ -77,7 +77,7 @@ function RouteComponent() {
 	);
 
 	return (
-		<ComponentInitialSetup
+		<PageCreate
 			heading="Sign In"
 			subText="Enter your details to sign in"
 			inputs={inputs}

@@ -9,12 +9,12 @@ import getAllBlanketBannedPeople from "@/api-requests/banned-people/getAllBlanke
 import getAllWithPendingBan from "@/api-requests/banned-people/getAllWithPendingBan";
 import getAllStaff from "@/api-requests/staff/getAllStaff";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
-import PageAlerts from "@/components/pages/TabAlerts";
-import PageBanIndex from "@/components/pages/TabBans";
-import PageBlanketBans from "@/components/pages/TabBlanketBans";
-import PagePendingBans from "@/components/pages/TabPendingBans";
-import PageStaff from "@/components/pages/TabStaff";
-import PageVenues from "@/components/pages/TabVenues";
+import TabAlerts from "@/components/pages/TabAlerts";
+import TabBans from "@/components/pages/TabBans";
+import TabBlanketBans from "@/components/pages/TabBlanketBans";
+import TabPendingBans from "@/components/pages/TabPendingBans";
+import TabStaff from "@/components/pages/TabStaff";
+import TabVenues from "@/components/pages/TabVenues";
 import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString } from "@/utils";
 import type { Staff } from "@/utils/interfaces";
@@ -30,7 +30,7 @@ export const Route = createFileRoute("/")({
 		}
 
 		const result = await getProfileFromJwt();
-		console.log(result)
+		console.log(result);
 
 		if (isApiRequestError(result) || isAxiosError(result)) {
 			throw redirect({ to: "/sign-in" });
@@ -62,7 +62,9 @@ export const Route = createFileRoute("/")({
 
 		return (
 			<ContentContainer>
-				<Text textStyle="title" textTransform='capitalize' >Dashboard - {tabs.value}</Text>
+				<Text textStyle="title" textTransform="capitalize">
+					Dashboard - {tabs.value}
+				</Text>
 				<Text textStyle="muted">Welcome {capitalizeString(user.name)}</Text>
 				<Tabs.Root defaultValue="alerts">
 					<Tabs.List overflowX="auto" overflowY="hidden" whiteSpace="nowrap">
@@ -98,7 +100,7 @@ export const Route = createFileRoute("/")({
 						{isApiRequestError(alerts) || isAxiosError(alerts) ? (
 							<Text>Cannot fetch alerts</Text>
 						) : (
-							<PageAlerts alerts={alerts} />
+							<TabAlerts alerts={alerts} />
 						)}
 					</Tabs.Content>
 
@@ -106,19 +108,19 @@ export const Route = createFileRoute("/")({
 						{isApiRequestError(pendingBans) || isAxiosError(pendingBans) ? (
 							<Text>Cannot fetch pending bans</Text>
 						) : (
-							<PagePendingBans pendingBans={pendingBans} />
+							<TabPendingBans pendingBans={pendingBans} />
 						)}
 					</Tabs.Content>
 
 					<Tabs.Content value="bans">
-						<PageBanIndex />
+						<TabBans />
 					</Tabs.Content>
 
-					<Tabs.Content value="balnket-bans">
+					<Tabs.Content value="blanket-bans">
 						{isApiRequestError(blanketBans) || isAxiosError(blanketBans) ? (
 							<Text>Cannot fetch pending bans</Text>
 						) : (
-							<PageBlanketBans blanketBans={blanketBans} />
+							<TabBlanketBans blanketBans={blanketBans} />
 						)}
 					</Tabs.Content>
 
@@ -126,14 +128,14 @@ export const Route = createFileRoute("/")({
 						{isApiRequestError(venues) || isAxiosError(venues) ? (
 							<Text>Cannot fetch venues</Text>
 						) : (
-							<PageVenues venues={venues} />
+							<TabVenues venues={venues} />
 						)}
 					</Tabs.Content>
 					<Tabs.Content value="staff">
 						{isApiRequestError(staff) || isAxiosError(staff) ? (
 							<Text>Cannot fetch staff</Text>
 						) : (
-							<PageStaff staff={staff} />
+							<TabStaff staff={staff} />
 						)}
 					</Tabs.Content>
 				</Tabs.Root>

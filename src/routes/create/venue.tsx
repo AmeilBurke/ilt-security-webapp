@@ -14,11 +14,11 @@ import toast from "react-hot-toast";
 import { LuFileUp } from "react-icons/lu";
 import isSetupDone from "@/api-requests/staff/isSetupDone";
 import createNewVenue from "@/api-requests/venues/createNewVenue";
-import ComponentInitialSetup from "@/components/pages/ComponentInitialSetup";
+import PageCreate from "@/components/pages/PageCreate";
 import { capitalizeString } from "@/utils";
 import type { IsSetupDone } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
-import createVenueImage from "../../assets/create-venue.png"
+import createVenueImage from "../../assets/create-venue.png";
 
 export const Route = createFileRoute("/create/venue")({
 	beforeLoad: async () => {
@@ -27,7 +27,7 @@ export const Route = createFileRoute("/create/venue")({
 		if (isAxiosError(result)) {
 			throw redirect({
 				to: "/error",
-				search: { error: result.message }
+				search: { error: result.message },
 			});
 		}
 
@@ -52,7 +52,7 @@ function RouteComponent() {
 	const createVenueHandler = async () => {
 		if (!venueImage) {
 			toast.error("No image was uploaded");
-			return
+			return;
 		}
 
 		const createVenueDto = new FormData();
@@ -62,34 +62,33 @@ function RouteComponent() {
 		createVenueDto.append("phone", phone);
 
 		setLoading(true);
-		console.log(createVenueDto)
+		console.log(createVenueDto);
 
 		const result = await createNewVenue(createVenueDto);
 
-		console.log(result)
-
+		console.log(result);
 
 		setLoading(false);
 
 		if (isApiRequestError(result)) {
 			toast.error(
 				`Failed to create an admin account because:\n - ${capitalizeString(result.message.join(`\n`))}`,
-			)
-			return
+			);
+			return;
 		}
 
 		if (isAxiosError(result)) {
 			router.navigate({
 				to: "/error",
-				search: { error: result.message }
+				search: { error: result.message },
 			});
-			return
+			return;
 		}
 
 		toast.success(`${result.data.name} was created`);
 		router.navigate({ to: "/" });
 		return;
-	}
+	};
 
 	const inputs = (
 		<>
@@ -163,7 +162,7 @@ function RouteComponent() {
 				/>
 			</Field.Root>
 		</>
-	)
+	);
 
 	const button = (
 		<Button
@@ -178,15 +177,15 @@ function RouteComponent() {
 		>
 			Create Account
 		</Button>
-	)
+	);
 
 	return (
-		<ComponentInitialSetup
+		<PageCreate
 			heading="Create Venue"
 			subText="Fill out the details below to create a venue"
 			inputs={inputs}
 			button={button}
 			imagePath={createVenueImage}
 		/>
-	)
+	);
 }

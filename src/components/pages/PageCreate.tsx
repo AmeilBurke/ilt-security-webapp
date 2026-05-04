@@ -16,9 +16,10 @@ const PageCreate = ({
 }: ComponentCreateProps) => {
   return (
     <HStack
-      w="full"
-      h="full"
-      minH="dvh"
+      // pt={100}
+      // w="full"
+      // h="full"
+      // minH="dvh"
       paddingTop={[
         "calc(env(safe-area-inset-top) + 2rem)",
         undefined,
