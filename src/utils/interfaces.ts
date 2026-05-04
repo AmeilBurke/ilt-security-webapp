@@ -20,6 +20,16 @@ export type CreateAlertDto = {
 	imagePath?: string;
 };
 
+export type CreateBanDto = {
+	personId: string;
+	reason: string;
+	notes?: string;
+	startDate: string;
+	endDate: string;
+	isBlanketBan: boolean;
+	venueIds: string[];
+}
+
 export interface ApiRequestError {
 	message: string[];
 	error: string;

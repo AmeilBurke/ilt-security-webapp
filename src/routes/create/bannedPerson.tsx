@@ -67,7 +67,7 @@ function RouteComponent() {
   const format = (date: DateValue) => {
     const day = date.day.toString().padStart(2, "0");
     const month = date.month.toString().padStart(2, "0");
-    const year = (date.year % 100).toString().padStart(2, "0");
+    const year = (date.year).toString().padStart(2, "0");
     return `${day}/${month}/${year}`;
   };
 
@@ -76,7 +76,6 @@ function RouteComponent() {
   }
 
   const createBannedPersonHandler = async () => {
-    setLoading(true);
 
     const createBannedPersonDto = new FormData();
 
@@ -109,8 +108,6 @@ function RouteComponent() {
     console.log(createBannedPersonDto);
 
     const result = await createNewBannedPerson(createBannedPersonDto);
-
-    console.log(result);
 
     setLoading(false);
 
