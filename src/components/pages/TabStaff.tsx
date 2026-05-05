@@ -6,6 +6,7 @@ const TabStaff = ({ staff }: { staff: Staff[] }) => {
 	const router = useRouter();
 	return (
 		<>
+			<Button onClick={() => {router.navigate({to:'/create/staff'})}}>Create Staff</Button>
 			<Button onClick={() => {router.navigate({to:'/sign-in'})}}>Sign Out</Button>
 			{staff.map((person) => {
 				return (

@@ -2,19 +2,12 @@ import {
 	Button,
 	CloseButton,
 	Dialog,
-	HStack,
-	IconButton,
-	Image,
-	Menu,
 	Portal,
-	SimpleGrid,
 	Text,
 	VStack,
 } from "@chakra-ui/react";
 import { Link } from "@tanstack/react-router";
-import dayjs from "dayjs";
 import { useState } from "react";
-import { CiMenuKebab } from "react-icons/ci";
 
 const TabBans = () => {
 	const [open, setOpen] = useState(false);
@@ -43,18 +36,18 @@ const TabBans = () => {
 								<Text>Is this ban for someone with a previous ban?</Text>
 							</Dialog.Body>
 							<Dialog.Footer>
-								<Link to="/create/bannedPerson">
-									<Button variant="outline">No</Button>
-								</Link>
-								<Link to="/create/ban">
-									<Button colorPalette="current">Yes</Button>
-								</Link>
+								<Button asChild variant="outline">
+									<Link to="/create/bannedPerson">No</Link>
+								</Button>
+								<Button asChild variant="outline">
+									<Link to="/create/ban">Yes</Link>
+								</Button>
 							</Dialog.Footer>
 						</Dialog.Content>
 					</Dialog.Positioner>
 				</Portal>
 			</Dialog.Root>
-		</VStack>
+		</VStack >
 	);
 };
 

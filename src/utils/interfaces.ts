@@ -1,4 +1,4 @@
-import type { BanDuration, BanStatus, Role } from "./enums";
+import type { BanStatus, Role } from "./enums";
 
 export interface IsSetupDone {
 	isInitialAdminCreated: boolean;
@@ -55,7 +55,7 @@ export interface Ban {
 	reason: string;
 	notes?: string;
 	startDate: Date;
-	duration: BanDuration;
+	endDate: Date;
 	isBlanketBan: boolean;
 	status: BanStatus;
 }

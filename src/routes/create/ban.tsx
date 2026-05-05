@@ -106,7 +106,6 @@ function RouteComponent() {
   };
 
   const createBanHandler = async () => {
-
     if (!selectedBannedPerson) {
       toast.error("Select a banned person to create a ban for");
       return;
@@ -135,8 +134,8 @@ function RouteComponent() {
       startDate: dayjs().toISOString(),
       endDate: dayjs(formattedDate).toISOString(),
       isBlanketBan: allChecked,
-      venueIds: venueIds
-    }
+      venueIds: venueIds,
+    };
     setLoading(true);
 
     const result = await createNewBan(createBanDto);
@@ -158,7 +157,7 @@ function RouteComponent() {
       return;
     }
 
-    toast.success("Ban was created");
+    toast.success("Account was created");
     router.navigate({ to: "/" });
     return;
   };
