@@ -25,29 +25,30 @@ export const Route = createFileRoute("/create/venue")({
 		const result = await isSetupDone();
 
 		if (isAxiosError(result)) {
-			throw redirect({
-				to: "/error",
-				search: { error: result.message },
-			});
+			throw redirect({ to: "/error", search: { error: result.message } });
 		}
 
-		const data = result.data as IsSetupDone;
+		if (isApiRequestError(result)) {
+			throw redirect({ to: "/error", search: { error: capitalizeString(result.error) } });
+		}
+
+		const data = result as IsSetupDone;
 
 		if (!data.isInitialAdminCreated) {
-			throw redirect({ to: "/create/venue" });
+			throw redirect({ to: "/create/admin" });
 		}
 	},
 	component: RouteComponent,
 });
 
 function RouteComponent() {
-	const [venueImage, setVenueImage] = useState<File>();
-	const [name, setName] = useState<string>("");
-	const [address, setAddress] = useState<string>("");
-	const [phone, setPhone] = useState<string>("");
-
-	const [loading, setLoading] = useState<boolean>(false);
 	const router = useRouter();
+
+	const [venueImage, setVenueImage] = useState<File | undefined>(undefined);
+	const [name, setName] = useState("");
+	const [address, setAddress] = useState("");
+	const [phone, setPhone] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const createVenueHandler = async () => {
 		if (!venueImage) {
@@ -62,32 +63,36 @@ function RouteComponent() {
 		createVenueDto.append("phone", phone);
 
 		setLoading(true);
-		console.log(createVenueDto);
+		try {
+			const result = await createNewVenue(createVenueDto);
 
-		const result = await createNewVenue(createVenueDto);
+			if (isApiRequestError(result)) {
+				toast.error(
+					`Failed to create venue because:\n - ${capitalizeString(result.message.join("\n"))}`,
+				);
+				return;
+			}
 
-		console.log(result);
+			if (isAxiosError(result)) {
+				router.navigate({ to: "/error", search: { error: result.message } });
+				return;
+			}
 
-		setLoading(false);
-
-		if (isApiRequestError(result)) {
-			toast.error(
-				`Failed to create an admin account because:\n - ${capitalizeString(result.message.join(`\n`))}`,
-			);
-			return;
-		}
-
-		if (isAxiosError(result)) {
+			toast.success(`${result.data.name} was created`);
+			router.navigate({ to: "/" });
+		} catch (error) {
 			router.navigate({
 				to: "/error",
-				search: { error: result.message },
+				search: {
+					error:
+						error instanceof Error
+							? error.message
+							: "An unexpected error occurred",
+				},
 			});
-			return;
+		} finally {
+			setLoading(false);
 		}
-
-		toast.success(`${result.data.name} was created`);
-		router.navigate({ to: "/" });
-		return;
 	};
 
 	const inputs = (
@@ -134,7 +139,8 @@ function RouteComponent() {
 					Name <Field.RequiredIndicator />
 				</Field.Label>
 				<Input
-					onChange={(event) => setName(event.target.value)}
+					value={name}
+					onChange={(e) => setName(e.target.value)}
 					placeholder="Enter name of venue"
 					variant="flushed"
 				/>
@@ -145,8 +151,9 @@ function RouteComponent() {
 					Address <Field.RequiredIndicator />
 				</Field.Label>
 				<Input
-					onChange={(event) => setAddress(event.target.value)}
-					placeholder="Enter name of venue"
+					value={address}
+					onChange={(e) => setAddress(e.target.value)}
+					placeholder="Enter address of venue"
 					variant="flushed"
 				/>
 			</Field.Root>
@@ -156,7 +163,8 @@ function RouteComponent() {
 					Phone <Field.RequiredIndicator />
 				</Field.Label>
 				<Input
-					onChange={(event) => setPhone(event.target.value)}
+					value={phone}
+					onChange={(e) => setPhone(e.target.value)}
 					placeholder="Enter phone # of venue"
 					variant="flushed"
 				/>
@@ -175,7 +183,7 @@ function RouteComponent() {
 			onClick={createVenueHandler}
 			loading={loading}
 		>
-			Create Account
+			Create Venue
 		</Button>
 	);
 

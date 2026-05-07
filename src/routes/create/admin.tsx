@@ -8,19 +8,20 @@ import createNewStaff from "@/api-requests/staff/createNewStaff";
 import isSetupDone from "@/api-requests/staff/isSetupDone";
 import PageCreate from "@/components/pages/PageCreate";
 import { PasswordInput } from "@/components/ui/password-input";
-import { handleApiResult } from "@/utils";
+import { capitalizeString, isErrorCheck } from "@/utils";
 import type { IsSetupDone } from "@/utils/interfaces";
+import { isApiRequestError } from "@/utils/isApiRequestError";
 import createAdminImage from "../../assets/create-admin.png";
 
 export const Route = createFileRoute("/create/admin")({
 	beforeLoad: async () => {
 		const result = await isSetupDone();
 
-		if (isAxiosError(result)) {
-			throw redirect({ to: "/error", search: { error: result.message } });
+		if (isErrorCheck(result)) {
+			throw redirect({ to: "/error", search: { error: "Cannot get needed information from server" } });
 		}
 
-		const data = result.data as IsSetupDone;
+		const data = result as IsSetupDone;
 
 		if (data.isInitialAdminCreated) {
 			throw redirect({ to: "/" });
@@ -30,13 +31,13 @@ export const Route = createFileRoute("/create/admin")({
 });
 
 function RouteComponent() {
-	const [email, setEmail] = useState<string>("");
-	const [name, setName] = useState<string>("");
-	const [password, setPassword] = useState<string>("");
-	const [confirmPassword, setConfirmPassword] = useState<string>("");
-
-	const [loading, setLoading] = useState<boolean>(false);
 	const router = useRouter();
+
+	const [email, setEmail] = useState("");
+	const [name, setName] = useState("");
+	const [password, setPassword] = useState("");
+	const [confirmPassword, setConfirmPassword] = useState("");
+	const [loading, setLoading] = useState(false);
 
 	const createAdminHandler = async () => {
 		if (!email || !name) {
@@ -52,7 +53,6 @@ function RouteComponent() {
 		}
 
 		setLoading(true);
-
 		try {
 			const createAdminResult = await createNewStaff({
 				email,
@@ -60,19 +60,58 @@ function RouteComponent() {
 				password,
 				role: "ADMIN",
 			});
-			if (!handleApiResult(createAdminResult, router)) return;
+
+			if (isAxiosError(createAdminResult)) {
+				router.navigate({
+					to: "/error",
+					search: { error: createAdminResult.message },
+				});
+				return;
+			}
+
+			if (isApiRequestError(createAdminResult)) {
+				router.navigate({
+					to: "/error",
+					search: {
+						error: capitalizeString(createAdminResult.error),
+					},
+				});
+				return;
+			}
 
 			const jwtResult = await getJwt(email, password);
-			if (!handleApiResult(jwtResult, router)) return;
 
-			localStorage.setItem("jwt", jwtResult.data.access_token);
+			if (isAxiosError(jwtResult)) {
+				router.navigate({
+					to: "/error",
+					search: { error: jwtResult.message },
+				});
+				return;
+			}
 
-			toast.success(createAdminResult.data);
+			if (isApiRequestError(jwtResult)) {
+				router.navigate({
+					to: "/error",
+					search: {
+						error: capitalizeString(jwtResult.message.join(", ")),
+					},
+				});
+				return;
+			}
+
+			localStorage.setItem("jwt", jwtResult.access_token);
+
+			toast.success(createAdminResult);
 			router.navigate({ to: "/create/venue" });
 		} catch (error) {
 			router.navigate({
 				to: "/error",
-				search: { error: JSON.stringify(error) },
+				search: {
+					error:
+						error instanceof Error
+							? error.message
+							: "An unexpected error occurred",
+				},
 			});
 		} finally {
 			setLoading(false);
@@ -86,7 +125,8 @@ function RouteComponent() {
 					Email <Field.RequiredIndicator />
 				</Field.Label>
 				<Input
-					onChange={(event) => setEmail(event.target.value)}
+					value={email}
+					onChange={(e) => setEmail(e.target.value)}
 					placeholder="Enter your email"
 					variant="flushed"
 				/>
@@ -97,7 +137,8 @@ function RouteComponent() {
 					Name <Field.RequiredIndicator />
 				</Field.Label>
 				<Input
-					onChange={(event) => setName(event.target.value)}
+					value={name}
+					onChange={(e) => setName(e.target.value)}
 					placeholder="Enter name"
 					variant="flushed"
 				/>

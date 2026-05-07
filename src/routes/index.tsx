@@ -16,8 +16,8 @@ import TabPendingBans from "@/components/pages/TabPendingBans";
 import TabStaff from "@/components/pages/TabStaff";
 import TabVenues from "@/components/pages/TabVenues";
 import ContentContainer from "@/components/ui/ContentContainer";
-import { capitalizeString } from "@/utils";
-import type { Staff } from "@/utils/interfaces";
+import { capitalizeString, isErrorCheck } from "@/utils";
+import type { ProfileDetailsFromJwt } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
 export const Route = createFileRoute("/")({
@@ -30,13 +30,13 @@ export const Route = createFileRoute("/")({
 		}
 
 		const result = await getProfileFromJwt();
-		console.log(result);
+		const isError = isErrorCheck(result)
 
-		if (isApiRequestError(result) || isAxiosError(result)) {
+		if (isError) {
 			throw redirect({ to: "/sign-in" });
 		}
 
-		return { staff: result.data as Staff };
+		return { staff: result as ProfileDetailsFromJwt };
 	},
 	loader: async () => {
 		const [alerts, pendingBans, blanketBans, venues, staff] = await Promise.all(
@@ -57,8 +57,7 @@ export const Route = createFileRoute("/")({
 		});
 
 		const { staff: user } = Route.useRouteContext();
-		const { alerts, pendingBans, blanketBans, venues, staff } =
-			Route.useLoaderData();
+		const { alerts, pendingBans, blanketBans, venues, staff } = Route.useLoaderData();
 
 		return (
 			<ContentContainer>

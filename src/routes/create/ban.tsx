@@ -26,70 +26,66 @@ import createNewBan from "@/api-requests/ban/createNewBan";
 import getAllBannedPeople from "@/api-requests/banned-people/getAllBannedPeople";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
 import PageCreate from "@/components/pages/PageCreate";
-import { capitalizeString } from "@/utils";
+import { capitalizeString, isErrorCheck } from "@/utils";
 import type { BannedPerson, CreateBanDto, Venue } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
+
+const formatDate = (date: DateValue) => {
+  const day = date.day.toString().padStart(2, "0");
+  const month = date.month.toString().padStart(2, "0");
+  const year = date.year.toString();
+  return `${day}/${month}/${year}`;
+};
 
 export const Route = createFileRoute("/create/ban")({
   component: RouteComponent,
   loader: async () => {
-    let [allBannedPeople, allVenues] = await Promise.all([
+    const [allBannedPeople, allVenues] = await Promise.all([
       getAllBannedPeople(),
       getAllVenues(),
     ]);
 
-    if (isAxiosError(allBannedPeople) || isApiRequestError(allBannedPeople)) {
-      allBannedPeople = [];
-    }
-
-    if (isAxiosError(allVenues) || isApiRequestError(allVenues)) {
-      allVenues = [];
-    }
-
-    return { allBannedPeople, allVenues };
+    return {
+      allBannedPeople:
+        isErrorCheck(allBannedPeople)
+          ? []
+          : (allBannedPeople as BannedPerson[]),
+      allVenues:
+        isErrorCheck(allBannedPeople)
+          ? []
+          : (allVenues as Venue[]),
+    };
   },
 });
 
 function RouteComponent() {
   const router = useRouter();
-  const { allBannedPeople, allVenues } = Route.useLoaderData() as {
-    allBannedPeople: BannedPerson[];
-    allVenues: Venue[];
-  };
+  const { allBannedPeople, allVenues } = Route.useLoaderData();
 
-  const [reason, setReason] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
+  const [reason, setReason] = useState("");
+  const [notes, setNotes] = useState("");
   const [endDate, setEndDate] = useState<DateValue[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-
+  const [loading, setLoading] = useState(false);
   const [bannedPersonSearch, setBannedPersonSearch] = useState("");
-  const [selectedBannedPerson, setSelectedBannedPerson] = useState<
-    BannedPerson | undefined
-  >(undefined);
+  const [selectedBannedPerson, setSelectedBannedPerson] = useState<BannedPerson | undefined>(undefined);
 
-  const initialValues = allVenues.map((venue) => {
-    return {
+  const [venueValues, setVenueValues] = useState(() =>
+    allVenues.map((venue) => ({
       label: venue.name,
       checked: false,
       value: venue.id,
-    };
-  });
+    })),
+  );
 
-  const [venueValues, setVenueValues] = useState(initialValues);
-  const allChecked = venueValues.every((value) => value.checked);
-  const noneChecked = venueValues.every((value) => !value.checked);
-  const indeterminate =
-    venueValues.some((value) => value.checked) && !allChecked;
-
-  const format = (date: DateValue) => {
-    const day = date.day.toString().padStart(2, "0");
-    const month = date.month.toString().padStart(2, "0");
-    const year = date.year.toString().padStart(2, "0");
-    return `${day}/${month}/${year}`;
-  };
+  const allChecked = venueValues.every((v) => v.checked);
+  const noneChecked = venueValues.every((v) => !v.checked);
+  const indeterminate = venueValues.some((v) => v.checked) && !allChecked;
 
   if (allVenues.length === 0) {
-    return "Error fetching venues";
+    toast.error("Could not get list of venues")
+    router.navigate({
+      to: "/"
+    });
   }
 
   const bannedPeopleFiltered = allBannedPeople.filter((person) =>
@@ -98,7 +94,7 @@ function RouteComponent() {
 
   const handlePersonSelect = (id: string) => {
     const person = allBannedPeople.find((p) => p.id === id);
-    setSelectedBannedPerson(person);
+    if (person) setSelectedBannedPerson(person);
   };
 
   const handleClear = () => {
@@ -110,56 +106,65 @@ function RouteComponent() {
       toast.error("Select a banned person to create a ban for");
       return;
     }
-
     if (!reason) {
       toast.error("Enter a reason for the ban");
       return;
     }
-
     if (endDate.length === 0) {
       toast.error("Enter a date for the ban to end");
       return;
     }
 
-    const formattedDate = `${endDate[0].year}/${endDate[0].month}/${endDate[0].day}`;
-
-    const venueIds = venueValues
-      .filter((value) => value.checked)
-      .map((value) => value.value);
+    const { year, month, day } = endDate[0];
+    const venueIds = venueValues.filter((v) => v.checked).map((v) => v.value);
 
     const createBanDto: CreateBanDto = {
       personId: selectedBannedPerson.id,
-      reason: reason,
-      notes: notes,
+      reason,
+      notes,
       startDate: dayjs().toISOString(),
-      endDate: dayjs(formattedDate).toISOString(),
+      endDate: dayjs(`${year}/${month}/${day}`).toISOString(),
       isBlanketBan: allChecked,
-      venueIds: venueIds,
+      venueIds,
     };
+
     setLoading(true);
+    try {
+      const result = await createNewBan(createBanDto);
 
-    const result = await createNewBan(createBanDto);
+      if (isAxiosError(result)) {
+        router.navigate({
+          to: "/error",
+          search: { error: result.message },
+        });
+        return;
+      }
 
-    setLoading(false);
+      if (isApiRequestError(result)) {
+        router.navigate({
+          to: "/error",
+          search: {
+            error: capitalizeString(result.error),
+          },
+        });
+        return;
+      }
 
-    if (isApiRequestError(result)) {
-      toast.error(
-        `Failed to create ban because:\n - ${capitalizeString(result.message.join(`\n`))}`,
-      );
-      return;
-    }
-
-    if (isAxiosError(result)) {
+      toast.success("Ban was created");
+      router.navigate({ to: "/" });
+    } catch (error) {
       router.navigate({
         to: "/error",
-        search: { error: result.message },
+        search: {
+          error:
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred",
+        },
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Account was created");
-    router.navigate({ to: "/" });
-    return;
   };
 
   const inputs = (
@@ -188,7 +193,6 @@ function RouteComponent() {
               ? selectedBannedPerson.name
               : "Select banned person here"}
           </Text>
-
           <IconButton
             opacity={selectedBannedPerson ? 100 : 0}
             variant="ghost"
@@ -205,7 +209,6 @@ function RouteComponent() {
               value={bannedPersonSearch}
               onChange={(e) => setBannedPersonSearch(e.target.value)}
             />
-
             <RadioGroup.Root
               value={selectedBannedPerson?.id ?? ""}
               onValueChange={(e) => handlePersonSelect(String(e.value))}
@@ -242,66 +245,70 @@ function RouteComponent() {
           Reason <Field.RequiredIndicator />
         </Field.Label>
         <Input
-          onChange={(event) => setReason(event.target.value)}
+          onChange={(e) => setReason(e.target.value)}
           placeholder="Enter reason for ban"
           variant="flushed"
         />
       </Field.Root>
 
       <Field.Root>
-        <Field.Label>
-          Notes <Field.RequiredIndicator />
-        </Field.Label>
+        <Field.Label>Notes</Field.Label>
         <Input
-          onChange={(event) => setNotes(event.target.value)}
+          onChange={(e) => setNotes(e.target.value)}
           placeholder="Enter extra details here if needed"
           variant="flushed"
         />
       </Field.Root>
 
-      <DatePicker.Root
-        required
-        format={format}
-        variant="flushed"
-        placeholder="dd/mm/yyyy"
-        openOnClick
-        value={endDate}
-        onValueChange={(e) => setEndDate(e.value)}
-      >
-        <DatePicker.Label>Ban End Date</DatePicker.Label>
-        <DatePicker.Control>
-          <DatePicker.Input />
-          <DatePicker.IndicatorGroup></DatePicker.IndicatorGroup>
-        </DatePicker.Control>
-        <Portal>
-          <DatePicker.Positioner>
-            <DatePicker.Content>
-              <DatePicker.View view="day">
-                <DatePicker.Header />
-                <DatePicker.DayTable />
-              </DatePicker.View>
-              <DatePicker.View view="month">
-                <DatePicker.Header />
-                <DatePicker.MonthTable />
-              </DatePicker.View>
-              <DatePicker.View view="year">
-                <DatePicker.Header />
-                <DatePicker.YearTable />
-              </DatePicker.View>
-            </DatePicker.Content>
-          </DatePicker.Positioner>
-        </Portal>
-      </DatePicker.Root>
+      <Field.Root required>
+        <DatePicker.Root
+          required
+          format={formatDate}
+          variant="flushed"
+          placeholder="dd/mm/yyyy"
+          openOnClick
+          value={endDate}
+          onValueChange={(e) => setEndDate(e.value)}
+        >
+          <DatePicker.Label asChild>
+            <Field.Label>
+              Ban End Date <Field.RequiredIndicator />
+            </Field.Label>
+          </DatePicker.Label>
+          <DatePicker.Control>
+            <DatePicker.Input />
+            <DatePicker.IndicatorGroup />
+          </DatePicker.Control>
+          <Portal>
+            <DatePicker.Positioner>
+              <DatePicker.Content>
+                <DatePicker.View view="day">
+                  <DatePicker.Header />
+                  <DatePicker.DayTable />
+                </DatePicker.View>
+                <DatePicker.View view="month">
+                  <DatePicker.Header />
+                  <DatePicker.MonthTable />
+                </DatePicker.View>
+                <DatePicker.View view="year">
+                  <DatePicker.Header />
+                  <DatePicker.YearTable />
+                </DatePicker.View>
+              </DatePicker.Content>
+            </DatePicker.Positioner>
+          </Portal>
+        </DatePicker.Root>
+      </Field.Root>
 
       <Stack w="full" gap={4} align="flex-start">
         <Text fontSize="sm">Ban From:</Text>
         <Checkbox.Root
           checked={indeterminate ? "indeterminate" : allChecked}
-          onCheckedChange={(e) => {
+          onCheckedChange={(e) =>
             setVenueValues((current) =>
-              current.map((value) => ({ ...value, checked: !!e.checked })),
-            );
-          }}
+              current.map((v) => ({ ...v, checked: !!e.checked })),
+            )
+          }
         >
           <Checkbox.HiddenInput />
           <Checkbox.Control>
@@ -309,21 +316,19 @@ function RouteComponent() {
           </Checkbox.Control>
           <Checkbox.Label>Blanket Ban?</Checkbox.Label>
         </Checkbox.Root>
+
         {venueValues.map((item, index) => (
           <Checkbox.Root
             ms="10"
             key={item.value}
             checked={item.checked}
-            onCheckedChange={(e) => {
-              setVenueValues((current) => {
-                const newValues = [...current];
-                newValues[index] = {
-                  ...newValues[index],
-                  checked: !!e.checked,
-                };
-                return newValues;
-              });
-            }}
+            onCheckedChange={(e) =>
+              setVenueValues((current) =>
+                current.map((v, i) =>
+                  i === index ? { ...v, checked: !!e.checked } : v,
+                ),
+              )
+            }
           >
             <Checkbox.HiddenInput />
             <Checkbox.Control />

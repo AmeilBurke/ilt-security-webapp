@@ -13,7 +13,7 @@ import {
   Text,
 } from "@chakra-ui/react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { type AxiosError, isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
 import toast from "react-hot-toast";
@@ -21,61 +21,76 @@ import { LuFileUp } from "react-icons/lu";
 import createNewBannedPerson from "@/api-requests/banned-people/createNewBannedPerson";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
 import PageCreate from "@/components/pages/PageCreate";
-import { capitalizeString } from "@/utils";
-import type { ApiRequestError, Venue } from "@/utils/interfaces";
+import { capitalizeString, isErrorCheck } from "@/utils";
+import type { Venue } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
+
+const formatDate = (date: DateValue) => {
+  const day = date.day.toString().padStart(2, "0");
+  const month = date.month.toString().padStart(2, "0");
+  const year = date.year.toString();
+  return `${day}/${month}/${year}`;
+};
 
 export const Route = createFileRoute("/create/bannedPerson")({
   component: RouteComponent,
   loader: async () => {
-    const allVenues: Venue[] | ApiRequestError | AxiosError =
-      await getAllVenues();
+    const allVenues = await getAllVenues();
 
-    if (isApiRequestError(allVenues) || isAxiosError(allVenues)) {
-      return [];
+    if (isErrorCheck(allVenues)) {
+      return [] as Venue[];
     }
 
-    return allVenues;
+    return allVenues as Venue[];
   },
 });
 
 function RouteComponent() {
   const router = useRouter();
-  const allVenues = Route.useLoaderData() as Venue[];
+  const allVenues = Route.useLoaderData();
 
-  const [image, setImage] = useState<File>();
-  const [name, setName] = useState<string>("");
-  const [reason, setReason] = useState<string>("");
-  const [notes, setNotes] = useState<string>("");
+  const [image, setImage] = useState<File | undefined>(undefined);
+  const [name, setName] = useState("");
+  const [reason, setReason] = useState("");
+  const [notes, setNotes] = useState("");
   const [endDate, setEndDate] = useState<DateValue[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
-  const initialValues = allVenues.map((venue) => {
-    return {
+  const [venueValues, setVenueValues] = useState(() =>
+    allVenues.map((venue) => ({
       label: venue.name,
       checked: false,
       value: venue.id,
-    };
-  });
+    })),
+  );
 
-  const [venueValues, setVenueValues] = useState(initialValues);
-  const allChecked = venueValues.every((value) => value.checked);
-  const noneChecked = venueValues.every((value) => !value.checked);
-  const indeterminate =
-    venueValues.some((value) => value.checked) && !allChecked;
-
-  const format = (date: DateValue) => {
-    const day = date.day.toString().padStart(2, "0");
-    const month = date.month.toString().padStart(2, "0");
-    const year = (date.year).toString().padStart(2, "0");
-    return `${day}/${month}/${year}`;
-  };
+  const allChecked = venueValues.every((v) => v.checked);
+  const noneChecked = venueValues.every((v) => !v.checked);
+  const indeterminate = venueValues.some((v) => v.checked) && !allChecked;
 
   if (allVenues.length === 0) {
-    return "Error fetching venues";
+    toast.error("Could not get list of venues")
+    router.navigate({
+      to: "/"
+    });
   }
 
   const createBannedPersonHandler = async () => {
+    if (!name) {
+      toast.error("Enter a name for the person");
+      return;
+    }
+    if (!reason) {
+      toast.error("Enter a reason for the ban");
+      return;
+    }
+    if (endDate.length === 0) {
+      toast.error("Enter a date for the ban to end");
+      return;
+    }
+
+    const { year, month, day } = endDate[0];
+    const venueIds = venueValues.filter((v) => v.checked).map((v) => v.value);
 
     const createBannedPersonDto = new FormData();
 
@@ -90,45 +105,54 @@ function RouteComponent() {
       createBannedPersonDto.append("notes", notes);
     }
 
-    const formattedDate = `${endDate[0].year}/${endDate[0].month}/${endDate[0].day}`;
-
     createBannedPersonDto.append("startDate", dayjs().toISOString());
-    createBannedPersonDto.append("endDate", dayjs(formattedDate).toISOString());
+    createBannedPersonDto.append(
+      "endDate",
+      dayjs(`${year}/${month}/${day}`).toISOString(),
+    );
     createBannedPersonDto.append("isBlanketBan", String(allChecked));
-
-    const venueIds = venueValues
-      .filter((value) => value.checked)
-      .map((value) => value.value);
 
     venueIds.forEach((id) => {
       createBannedPersonDto.append("venueIds", id);
     });
 
     setLoading(true);
-    console.log(createBannedPersonDto);
+    try {
+      const result = await createNewBannedPerson(createBannedPersonDto);
 
-    const result = await createNewBannedPerson(createBannedPersonDto);
+      if (isAxiosError(result)) {
+        router.navigate({
+          to: "/error",
+          search: { error: result.message },
+        });
+        return;
+      }
 
-    setLoading(false);
+      if (isApiRequestError(result)) {
+        router.navigate({
+          to: "/error",
+          search: {
+            error: capitalizeString(result.error),
+          },
+        });
+        return;
+      }
 
-    if (isApiRequestError(result)) {
-      toast.error(
-        `Failed to create ban because:\n - ${capitalizeString(result.message.join(`\n`))}`,
-      );
-      return;
-    }
-
-    if (isAxiosError(result)) {
+      toast.success("Banned person was created");
+      router.navigate({ to: "/" });
+    } catch (error) {
       router.navigate({
         to: "/error",
-        search: { error: result.message },
+        search: {
+          error:
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred",
+        },
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Ban was created");
-    router.navigate({ to: "/" });
-    return;
   };
 
   const inputs = (
@@ -175,7 +199,7 @@ function RouteComponent() {
           Name <Field.RequiredIndicator />
         </Field.Label>
         <Input
-          onChange={(event) => setName(event.target.value)}
+          onChange={(e) => setName(e.target.value)}
           placeholder="Enter name of person"
           variant="flushed"
         />
@@ -186,65 +210,70 @@ function RouteComponent() {
           Reason <Field.RequiredIndicator />
         </Field.Label>
         <Input
-          onChange={(event) => setReason(event.target.value)}
+          onChange={(e) => setReason(e.target.value)}
           placeholder="Enter reason for ban"
           variant="flushed"
         />
       </Field.Root>
 
       <Field.Root>
-        <Field.Label>
-          Notes <Field.RequiredIndicator />
-        </Field.Label>
+        <Field.Label>Notes</Field.Label>
         <Input
-          onChange={(event) => setNotes(event.target.value)}
+          onChange={(e) => setNotes(e.target.value)}
           placeholder="Enter any extra details here"
           variant="flushed"
         />
       </Field.Root>
 
-      <DatePicker.Root
-        format={format}
-        variant="flushed"
-        placeholder="dd/mm/yy"
-        openOnClick
-        value={endDate}
-        onValueChange={(e) => setEndDate(e.value)}
-      >
-        <DatePicker.Label>Ban End Date</DatePicker.Label>
-        <DatePicker.Control>
-          <DatePicker.Input />
-          <DatePicker.IndicatorGroup></DatePicker.IndicatorGroup>
-        </DatePicker.Control>
-        <Portal>
-          <DatePicker.Positioner>
-            <DatePicker.Content>
-              <DatePicker.View view="day">
-                <DatePicker.Header />
-                <DatePicker.DayTable />
-              </DatePicker.View>
-              <DatePicker.View view="month">
-                <DatePicker.Header />
-                <DatePicker.MonthTable />
-              </DatePicker.View>
-              <DatePicker.View view="year">
-                <DatePicker.Header />
-                <DatePicker.YearTable />
-              </DatePicker.View>
-            </DatePicker.Content>
-          </DatePicker.Positioner>
-        </Portal>
-      </DatePicker.Root>
+      <Field.Root required>
+        <DatePicker.Root
+          required
+          format={formatDate}
+          variant="flushed"
+          placeholder="dd/mm/yyyy"
+          openOnClick
+          value={endDate}
+          onValueChange={(e) => setEndDate(e.value)}
+        >
+          <DatePicker.Label asChild>
+            <Field.Label>
+              Ban End Date <Field.RequiredIndicator />
+            </Field.Label>
+          </DatePicker.Label>
+          <DatePicker.Control>
+            <DatePicker.Input />
+            <DatePicker.IndicatorGroup />
+          </DatePicker.Control>
+          <Portal>
+            <DatePicker.Positioner>
+              <DatePicker.Content>
+                <DatePicker.View view="day">
+                  <DatePicker.Header />
+                  <DatePicker.DayTable />
+                </DatePicker.View>
+                <DatePicker.View view="month">
+                  <DatePicker.Header />
+                  <DatePicker.MonthTable />
+                </DatePicker.View>
+                <DatePicker.View view="year">
+                  <DatePicker.Header />
+                  <DatePicker.YearTable />
+                </DatePicker.View>
+              </DatePicker.Content>
+            </DatePicker.Positioner>
+          </Portal>
+        </DatePicker.Root>
+      </Field.Root>
 
       <Stack w="full" gap={4} align="flex-start">
         <Text fontSize="sm">Ban From:</Text>
         <Checkbox.Root
           checked={indeterminate ? "indeterminate" : allChecked}
-          onCheckedChange={(e) => {
+          onCheckedChange={(e) =>
             setVenueValues((current) =>
-              current.map((value) => ({ ...value, checked: !!e.checked })),
-            );
-          }}
+              current.map((v) => ({ ...v, checked: !!e.checked })),
+            )
+          }
         >
           <Checkbox.HiddenInput />
           <Checkbox.Control>
@@ -252,21 +281,19 @@ function RouteComponent() {
           </Checkbox.Control>
           <Checkbox.Label>Blanket Ban?</Checkbox.Label>
         </Checkbox.Root>
+
         {venueValues.map((item, index) => (
           <Checkbox.Root
             ms="10"
             key={item.value}
             checked={item.checked}
-            onCheckedChange={(e) => {
-              setVenueValues((current) => {
-                const newValues = [...current];
-                newValues[index] = {
-                  ...newValues[index],
-                  checked: !!e.checked,
-                };
-                return newValues;
-              });
-            }}
+            onCheckedChange={(e) =>
+              setVenueValues((current) =>
+                current.map((v, i) =>
+                  i === index ? { ...v, checked: !!e.checked } : v,
+                ),
+              )
+            }
           >
             <Checkbox.HiddenInput />
             <Checkbox.Control />

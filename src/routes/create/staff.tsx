@@ -9,139 +9,135 @@ import {
   VStack,
 } from "@chakra-ui/react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { type AxiosError, isAxiosError } from "axios";
+import { isAxiosError } from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import createNewStaff from "@/api-requests/staff/createNewStaff";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
 import PageCreate from "@/components/pages/PageCreate";
 import { PasswordInput } from "@/components/ui/password-input";
-import { capitalizeString } from "@/utils";
+import { capitalizeString, isErrorCheck } from "@/utils";
 import { Role } from "@/utils/enums";
-import type {
-  ApiRequestError,
-  CreateStaffDto,
-  Venue,
-} from "@/utils/interfaces";
+import type { CreateStaffDto, Venue } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
+
+// Moved outside component — no dependency on props or state
+const allRoles = Object.entries(Role).map(([key, value]) => ({
+  key: key as Role,
+  label: value.replace("_", " ").toLowerCase(),
+}));
+
+const requiresVenueAssignment = (role: Role | null) =>
+  role === Role.VENUE_MANAGER || role === Role.DUTY_MANAGER;
 
 export const Route = createFileRoute("/create/staff")({
   component: RouteComponent,
   loader: async () => {
-    const allVenues: Venue[] | ApiRequestError | AxiosError =
-      await getAllVenues();
+    const allVenues = await getAllVenues();
 
-    if (isApiRequestError(allVenues) || isAxiosError(allVenues)) {
-      return [];
+    if (isErrorCheck(allVenues)) {
+      return [] as Venue[];
     }
 
-    return allVenues;
+    return allVenues as Venue[];
   },
 });
 
-//need to clean up logic
-
 function RouteComponent() {
   const router = useRouter();
-  const allVenues = Route.useLoaderData() as Venue[];
-  const [email, setEmail] = useState<string>("");
-  const [password, setPassword] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [roleValue, setRoleValue] = useState<string | null>(null);
-  const [loading, setLoading] = useState<boolean>(false);
+  const allVenues = Route.useLoaderData();
 
-  const allRoles = Object.entries(Role).map(([key, value]) => {
-    const test = {
-      key: key,
-      value: String(value).toLowerCase(),
-    };
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [name, setName] = useState("");
+  const [roleValue, setRoleValue] = useState<Role | null>(null);
+  const [loading, setLoading] = useState(false);
 
-    if (value.includes("_")) {
-      test.value = value.replace("_", " ").toLowerCase();
-    }
-
-    return test;
-  });
-
-  const roleInitialValues = allRoles.map((role) => {
-    return {
-      label: role.value,
-      checked: false,
-      value: role.key,
-    };
-  });
-
-  const allVenueValues = allVenues.map((venue) => {
-    return {
+  // Lazy initializer — allVenues won't change, so no need to recompute on every render
+  const [venueValues, setVenueValues] = useState(() =>
+    allVenues.map((venue) => ({
       label: venue.name,
       checked: false,
       value: venue.id,
-    };
-  });
+    })),
+  );
 
-  const [venueValues, setVenueValues] = useState(allVenueValues);
-
-  const allChecked = venueValues.every((value) => value.checked);
-  const noneChecked = venueValues.every((value) => !value.checked);
-  const indeterminate =
-    venueValues.some((value) => value.checked) && !allChecked;
+  const allChecked = venueValues.every((v) => v.checked);
+  const noneChecked = venueValues.every((v) => !v.checked);
+  const indeterminate = venueValues.some((v) => v.checked) && !allChecked;
 
   const createStaffHandler = async () => {
-    if (
-      (roleValue === Role.VENUE_MANAGER || roleValue === Role.DUTY_MANAGER) &&
-      noneChecked
-    ) {
-      toast.error("Select at least one venue to add the account to");
+    // These guards are a safety net — the submit button is disabled when these
+    // conditions aren't met, so in practice they should never fire
+    const errors = [
+      !email && "Missing email",
+      !password && "Missing password",
+      !name && "Missing name",
+      !roleValue && "Missing role",
+      requiresVenueAssignment(roleValue) &&
+      noneChecked &&
+      "Select at least one venue to add the account to",
+    ].filter(Boolean) as string[];
+
+    if (errors.length > 0) {
+      toast.error(errors.join("\n\n"));
       return;
     }
+
+    if (!roleValue) return;
+
+    const venueIds = venueValues.filter((v) => v.checked).map((v) => v.value);
 
     const createStaffDto: CreateStaffDto = {
-      email: email,
-      password: password,
-      name: name,
-      role: Role[roleValue as keyof typeof Role],
+      email,
+      password,
+      name,
+      role: roleValue,
+      ...(roleValue === Role.VENUE_MANAGER && {
+        venueManagerAssignments: venueIds,
+      }),
+      ...(roleValue === Role.DUTY_MANAGER && {
+        dutyManagerAssignments: venueIds,
+      }),
     };
 
-    const venueIds = venueValues
-      .filter((value) => value.checked)
-      .map((value) => value.value);
-
-    console.log(venueIds)
-
-    console.log(Role[roleValue as keyof typeof Role] === Role.VENUE_MANAGER)
-    if (Role[roleValue as keyof typeof Role] === Role.VENUE_MANAGER) {
-      createStaffDto.venueManagerAssignments = venueIds;
-    }
-
-    if (Role[roleValue as keyof typeof Role] === Role.DUTY_MANAGER) {
-      createStaffDto.dutyManagerAssignments = venueIds;
-    }
-
     setLoading(true);
+    try {
+      const result = await createNewStaff(createStaffDto);
 
-    const result = await createNewStaff(createStaffDto);
-    console.log(result)
+      if (isAxiosError(result)) {
+        router.navigate({
+          to: "/error",
+          search: { error: result.message },
+        });
+        return;
+      }
 
-    setLoading(false);
+      if (isApiRequestError(result)) {
+        router.navigate({
+          to: "/error",
+          search: {
+            error: capitalizeString(result.error),
+          },
+        });
+        return;
+      }
 
-    if (isApiRequestError(result)) {
-      toast.error(
-        `Failed to create account because:\n - ${capitalizeString(result.message.join(`\n`))}`,
-      );
-      return;
-    }
-
-    if (isAxiosError(result)) {
+      toast.success("Account was created");
+      router.navigate({ to: "/" });
+    } catch (error) {
       router.navigate({
         to: "/error",
-        search: { error: result.message },
+        search: {
+          error:
+            error instanceof Error
+              ? error.message
+              : "An unexpected error occurred",
+        },
       });
-      return;
+    } finally {
+      setLoading(false);
     }
-
-    toast.success("Account was created");
-    router.navigate({ to: "/" });
-    return;
   };
 
   const inputs = (
@@ -151,7 +147,8 @@ function RouteComponent() {
           Email <Field.RequiredIndicator />
         </Field.Label>
         <Input
-          onChange={(event) => setEmail(event.target.value)}
+          value={email}
+          onChange={(e) => setEmail(e.target.value)}
           placeholder="Enter your email"
           variant="flushed"
         />
@@ -162,7 +159,8 @@ function RouteComponent() {
           Name <Field.RequiredIndicator />
         </Field.Label>
         <Input
-          onChange={(event) => setName(event.target.value)}
+          value={name}
+          onChange={(e) => setName(e.target.value)}
           placeholder="Enter name"
           variant="flushed"
         />
@@ -181,18 +179,22 @@ function RouteComponent() {
       </Field.Root>
 
       <Stack w="full" gap={4} align="flex-start">
-        <Text fontSize="sm">Role:</Text>
-
+        <Text fontSize="sm" fontWeight="semibold">
+          Role:
+        </Text>
         <RadioGroup.Root
           value={roleValue}
-          onValueChange={(e) => setRoleValue(e.value)}
+          onValueChange={(e) => setRoleValue(e.value as Role)}
         >
-          <VStack gap="6">
-            {roleInitialValues.map((item) => (
-              <RadioGroup.Item key={item.value} value={item.value}>
+          <VStack gap={6} alignItems="flex-start">
+            {allRoles.map((item) => (
+              <RadioGroup.Item key={item.key} value={item.key}>
                 <RadioGroup.ItemHiddenInput />
                 <RadioGroup.ItemIndicator />
-                <RadioGroup.ItemText textTransform="capitalize">
+                <RadioGroup.ItemText
+                  fontWeight="normal"
+                  textTransform="capitalize"
+                >
                   {item.label}
                 </RadioGroup.ItemText>
               </RadioGroup.Item>
@@ -201,16 +203,16 @@ function RouteComponent() {
         </RadioGroup.Root>
       </Stack>
 
-      {roleValue !== "VENUE_MANAGER" && roleValue !== "DUTY_MANAGER" ? null : (
+      {requiresVenueAssignment(roleValue) && (
         <Stack w="full" gap={4} align="flex-start">
-          <Text fontSize="sm">Ban From:</Text>
+          <Text fontSize="sm">Venues:</Text>
           <Checkbox.Root
             checked={indeterminate ? "indeterminate" : allChecked}
-            onCheckedChange={(e) => {
+            onCheckedChange={(e) =>
               setVenueValues((current) =>
-                current.map((value) => ({ ...value, checked: !!e.checked })),
-              );
-            }}
+                current.map((v) => ({ ...v, checked: !!e.checked })),
+              )
+            }
           >
             <Checkbox.HiddenInput />
             <Checkbox.Control>
@@ -218,21 +220,19 @@ function RouteComponent() {
             </Checkbox.Control>
             <Checkbox.Label>Add To All Venues</Checkbox.Label>
           </Checkbox.Root>
+
           {venueValues.map((item, index) => (
             <Checkbox.Root
               ms="10"
               key={item.value}
               checked={item.checked}
-              onCheckedChange={(e) => {
-                setVenueValues((current) => {
-                  const newValues = [...current];
-                  newValues[index] = {
-                    ...newValues[index],
-                    checked: !!e.checked,
-                  };
-                  return newValues;
-                });
-              }}
+              onCheckedChange={(e) =>
+                setVenueValues((current) =>
+                  current.map((v, i) =>
+                    i === index ? { ...v, checked: !!e.checked } : v,
+                  ),
+                )
+              }
             >
               <Checkbox.HiddenInput />
               <Checkbox.Control />
@@ -248,9 +248,7 @@ function RouteComponent() {
 
   const button = (
     <Button
-      disabled={
-        email === "" || password === "" || name === "" || roleValue === null
-      }
+      disabled={!email || !password || !name || !roleValue}
       onClick={createStaffHandler}
       loading={loading}
     >

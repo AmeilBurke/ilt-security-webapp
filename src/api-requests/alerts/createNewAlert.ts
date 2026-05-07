@@ -3,7 +3,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { Alert, ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewAlert = async (createAlertDto: FormData): Promise<Alert> => {
+const createNewAlert = async (createAlertDto: FormData): Promise<Alert | AxiosError | ApiRequestError> => {
     return axiosInstance
         .post("/alerts", createAlertDto)
         .then((response: AxiosResponse) => {

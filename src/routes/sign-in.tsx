@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import getJwt from "@/api-requests/authentication/getJwt";
 import PageCreate from "@/components/pages/PageCreate";
 import { PasswordInput } from "@/components/ui/password-input";
-import { handleApiResult } from "@/utils";
+import { isErrorCheck } from "@/utils";
 import signInImage from "../assets/sign-in.webp";
 
 export const Route = createFileRoute("/sign-in")({
@@ -25,10 +25,17 @@ function RouteComponent() {
 		setLoading(true);
 
 		try {
-			const jwtResult = await getJwt(email, password);
-			if (!handleApiResult(jwtResult, router)) return;
+			const jwtResult = await getJwt(email, password)
+			const isError = isErrorCheck(jwtResult)
 
-			localStorage.setItem("jwt", jwtResult.data.access_token);
+			if (isError) {
+				console.log(jwtResult)
+				return;
+			}
+
+			const { access_token } = jwtResult as { access_token: string };
+			localStorage.setItem("jwt", access_token);
+
 			toast.success("Sign in successful");
 			router.navigate({ to: "/" });
 		} catch (error: unknown) {

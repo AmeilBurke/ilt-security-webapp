@@ -3,7 +3,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const deleteAlertById = async (alertId: string): Promise<any> => {
+const deleteAlertById = async (alertId: string): Promise<string | AxiosError | ApiRequestError> => {
     return axiosInstance
         .delete(`/alerts/${alertId}`)
         .then((response: AxiosResponse) => {

@@ -23,23 +23,20 @@ import { LuChevronRight, LuFileUp } from "react-icons/lu";
 import createNewAlert from "@/api-requests/alerts/createNewAlert";
 import getAllBannedPeople from "@/api-requests/banned-people/getAllBannedPeople";
 import ContentContainer from "@/components/ui/ContentContainer";
-import { capitalizeString } from "@/utils";
+import { capitalizeString, isErrorCheck } from "@/utils";
 import type { ApiRequestError, BannedPerson } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
 export const Route = createFileRoute("/create/alert")({
   component: RouteComponent,
   loader: async () => {
-    const allBannedPeople: BannedPerson[] | ApiRequestError | AxiosError =
-      await getAllBannedPeople();
+    const allBannedPeople: BannedPerson[] | ApiRequestError | AxiosError = await getAllBannedPeople();
 
-    if (isApiRequestError(allBannedPeople) || isAxiosError(allBannedPeople)) {
+    if (isErrorCheck(allBannedPeople)) {
       return [];
     }
 
-
     const allBannedPeopleWithoutAlerts = allBannedPeople.filter((person) => {
-      console.log(person)
       return person.alerts.length === 0
     })
     return allBannedPeopleWithoutAlerts;

@@ -30,6 +30,15 @@ export type CreateBanDto = {
 	venueIds: string[];
 }
 
+export type ProfileDetailsFromJwt = {
+	id: string,
+	email: string,
+	name: string,
+	role: string,
+	iat: number
+}
+
+
 export interface ApiRequestError {
 	message: string[];
 	error: string;
@@ -48,6 +57,13 @@ export interface DutyManager {
 	venueId: string;
 }
 
+export interface VenueBan {
+	id: string;
+	banId: string;
+	venueId: string;
+	endDate: string;
+}
+
 export interface Ban {
 	id: string;
 	personId: string;
@@ -60,11 +76,33 @@ export interface Ban {
 	status: BanStatus;
 }
 
+export interface BanWithVenueBans {
+	id: string;
+	personId: string;
+	createdById: string;
+	reason: string;
+	notes?: string;
+	startDate: Date;
+	endDate: Date;
+	isBlanketBan: boolean;
+	status: BanStatus;
+	venueBans: VenueBan[]
+}
+
+
 export interface BannedPerson {
 	id: string;
 	name: string;
 	imagePath: string;
 	bans: Ban[];
+	alerts: Alert[];
+}
+
+export interface BannedPersonWithVenueBans {
+	id: string;
+	name: string;
+	imagePath: string;
+	bans: BanWithVenueBans[];
 	alerts: Alert[];
 }
 
