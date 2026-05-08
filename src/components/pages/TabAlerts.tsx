@@ -2,45 +2,53 @@ import {
 	Button,
 	CloseButton,
 	Dialog,
-	HStack,
-	IconButton,
-	Image,
-	Menu,
 	Portal,
 	SimpleGrid,
 	Text,
 	VStack,
 } from "@chakra-ui/react";
 import { useRouter } from "@tanstack/react-router";
-import { isAxiosError } from "axios";
-import dayjs from "dayjs";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { CiMenuKebab } from "react-icons/ci";
 import deleteAlertById from "@/api-requests/alerts/deleteAlertById";
 import getAllAlerts from "@/api-requests/alerts/getAllAlerts";
-import { capitalizeString } from "@/utils";
+import { isErrorCheck } from "@/utils";
+import type { Role } from "@/utils/enums";
 import type { Alert } from "@/utils/interfaces";
-import { isApiRequestError } from "@/utils/isApiRequestError";
+import CardAlert from "../ui/CardAlert";
 
-const TabAlerts = ({ alerts }: { alerts: Alert[] }) => {
-	const [selectedAlertId, setSelectedAlertId] = useState<string>("");
+export type TabAlertsProps = { alerts: Alert[]; userRole: Role };
+type DialogMode = "delete" | "edit" | null;
+
+const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 	const router = useRouter();
+	const [selectedAlert, setSelectedAlert] = useState<Alert | null>(null);
+	const [dialogMode, setDialogMode] = useState<DialogMode>(null);
 
-	const deleteAlertHandler = async (alertId: string) => {
-		const deleteResult = await deleteAlertById(alertId);
+	const openDialog = (alert: Alert, mode: DialogMode) => {
+		setSelectedAlert(alert);
+		setDialogMode(mode);
+	};
 
-		if (isApiRequestError(deleteResult) || isAxiosError(deleteResult)) {
+	const closeDialog = () => {
+		setSelectedAlert(null);
+		setDialogMode(null);
+	};
+
+	const deleteAlertHandler = async (alert: Alert) => {
+		const deleteResult = await deleteAlertById(alert.id);
+
+		if (isErrorCheck(deleteResult)) {
 			toast.error("Could not delete alert, try again later");
 			return;
 		}
 
-		setSelectedAlertId("");
+		closeDialog();
 		toast.success("Alert successfully deleted");
 
 		const getAllAlertsResult = await getAllAlerts();
 
-		if (isApiRequestError(getAllAlertsResult) || isAxiosError(getAllAlertsResult)) {
+		if (isErrorCheck(getAllAlertsResult)) {
 			toast.error("Could not get updated alerts, try again later");
 			return;
 		}
@@ -59,44 +67,12 @@ const TabAlerts = ({ alerts }: { alerts: Alert[] }) => {
 			) : (
 				<SimpleGrid w="full" columns={{ base: 2, lg: 4 }} gap={8}>
 					{alerts.map((alert) => (
-						<VStack key={alert.id} h="100%" align="flex-start" gap={2}>
-							<Image
-								w="full"
-								aspectRatio={1}
-								objectFit="cover"
-								src={alert.imagePath}
-							/>
-							<VStack w="full" alignItems="flex-start" gap={1}>
-								<HStack w="full" justifyContent={"space-between"}>
-									<Text>{capitalizeString(alert.reason)}</Text>
-									<Menu.Root>
-										<Menu.Trigger asChild>
-											<IconButton variant="ghost">
-												<CiMenuKebab />
-											</IconButton>
-										</Menu.Trigger>
-										<Portal>
-											<Menu.Positioner>
-												<Menu.Content>
-													<Menu.Item value="delete">
-														<Menu.Item
-															value="delete"
-															onClick={() => setSelectedAlertId(alert.id)}
-														>
-															Delete...
-														</Menu.Item>
-													</Menu.Item>
-												</Menu.Content>
-											</Menu.Positioner>
-										</Portal>
-									</Menu.Root>
-								</HStack>
-								<Text fontSize="small" color="gray.500">
-									Uploaded by {capitalizeString(alert.createdBy.name)} @{" "}
-									{dayjs(alert.startDate).format("hh:mm a")}
-								</Text>
-							</VStack>
-						</VStack>
+						<CardAlert
+							key={alert.id}
+							alert={alert}
+							onSelectAlert={() => openDialog(alert, "delete")}
+							userRole={userRole}
+						/>
 					))}
 				</SimpleGrid>
 			)}
@@ -106,11 +82,9 @@ const TabAlerts = ({ alerts }: { alerts: Alert[] }) => {
 				placement="center"
 				role="alertdialog"
 				closeOnInteractOutside={true}
-				open={selectedAlertId !== ""}
+				open={dialogMode !== null}
 				onOpenChange={(e) => {
-					if (!e.open) {
-						setSelectedAlertId("");
-					}
+					if (!e.open) closeDialog();
 				}}
 			>
 				<Portal>
@@ -120,24 +94,22 @@ const TabAlerts = ({ alerts }: { alerts: Alert[] }) => {
 							<Dialog.CloseTrigger asChild>
 								<CloseButton />
 							</Dialog.CloseTrigger>
+
 							<Dialog.Header>
 								<Dialog.Title>Confirm Delete</Dialog.Title>
 							</Dialog.Header>
 							<Dialog.Body>
 								<Text>
-									Are you sure you want to delete this item? This action cannot
-									be undone.
+									Are you sure you want to delete this item? This action
+									cannot be undone.
 								</Text>
 							</Dialog.Body>
 							<Dialog.Footer>
-								<Button
-									variant="outline"
-									onClick={() => setSelectedAlertId("")}
-								>
+								<Button variant="outline" onClick={closeDialog}>
 									Cancel
 								</Button>
 								<Button
-									onClick={() => deleteAlertHandler(selectedAlertId)}
+									onClick={() => selectedAlert ? deleteAlertHandler(selectedAlert) : null}
 									colorPalette="red"
 								>
 									Delete
@@ -147,7 +119,7 @@ const TabAlerts = ({ alerts }: { alerts: Alert[] }) => {
 					</Dialog.Positioner>
 				</Portal>
 			</Dialog.Root>
-		</VStack>
+		</VStack >
 	);
 };
 

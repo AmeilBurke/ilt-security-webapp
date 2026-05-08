@@ -37,12 +37,19 @@ export const Route = createFileRoute("/create/venue")({
 		if (!data.isInitialAdminCreated) {
 			throw redirect({ to: "/create/admin" });
 		}
+
+		return data as IsSetupDone;
 	},
+	loader: ({ context }) => {
+		return context.isInitialVenueCreated;
+	},
+
 	component: RouteComponent,
 });
 
 function RouteComponent() {
 	const router = useRouter();
+	const isInitialVenueCreated = Route.useLoaderData()
 
 	const [venueImage, setVenueImage] = useState<File | undefined>(undefined);
 	const [name, setName] = useState("");
@@ -193,7 +200,7 @@ function RouteComponent() {
 			subText="Fill out the details below to create a venue"
 			inputs={inputs}
 			button={button}
-			imagePath={createVenueImage}
+			imagePath={!isInitialVenueCreated ? createVenueImage : undefined}
 		/>
 	);
 }

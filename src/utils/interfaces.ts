@@ -34,7 +34,7 @@ export type ProfileDetailsFromJwt = {
 	id: string,
 	email: string,
 	name: string,
-	role: string,
+	role: Role,
 	iat: number
 }
 

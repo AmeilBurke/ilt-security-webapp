@@ -67,8 +67,6 @@ function RouteComponent() {
   const indeterminate = venueValues.some((v) => v.checked) && !allChecked;
 
   const createStaffHandler = async () => {
-    // These guards are a safety net — the submit button is disabled when these
-    // conditions aren't met, so in practice they should never fire
     const errors = [
       !email && "Missing email",
       !password && "Missing password",

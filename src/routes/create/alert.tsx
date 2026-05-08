@@ -39,13 +39,13 @@ export const Route = createFileRoute("/create/alert")({
     const allBannedPeopleWithoutAlerts = allBannedPeople.filter((person) => {
       return person.alerts.length === 0
     })
-    return allBannedPeopleWithoutAlerts;
+    return allBannedPeopleWithoutAlerts as BannedPerson[];
   },
 });
 
 function RouteComponent() {
   const router = useRouter();
-  const allBannedPeople = Route.useLoaderData() as BannedPerson[];
+  const allBannedPeople = Route.useLoaderData();
 
   const [bannedPersonSearch, setBannedPersonSearch] = useState("");
   const [selectedBannedPerson, setSelectedBannedPerson] = useState<

@@ -1,6 +1,5 @@
 import { Tabs, Text, useTabs } from "@chakra-ui/react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
-import { isAxiosError } from "axios";
 import { LiaExclamationSolid } from "react-icons/lia";
 import { LuSquareCheck } from "react-icons/lu";
 import getAllAlerts from "@/api-requests/alerts/getAllAlerts";
@@ -17,9 +16,8 @@ import TabStaff from "@/components/pages/TabStaff";
 import TabVenues from "@/components/pages/TabVenues";
 import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString, isErrorCheck } from "@/utils";
+import { Role } from "@/utils/enums";
 import type { ProfileDetailsFromJwt } from "@/utils/interfaces";
-import { isApiRequestError } from "@/utils/isApiRequestError";
-
 export const Route = createFileRoute("/")({
 	errorComponent: ({ error }) => <div>{String(error)}</div>,
 	beforeLoad: async () => {
@@ -30,7 +28,7 @@ export const Route = createFileRoute("/")({
 		}
 
 		const result = await getProfileFromJwt();
-		const isError = isErrorCheck(result)
+		const isError = isErrorCheck(result);
 
 		if (isError) {
 			throw redirect({ to: "/sign-in" });
@@ -57,7 +55,8 @@ export const Route = createFileRoute("/")({
 		});
 
 		const { staff: user } = Route.useRouteContext();
-		const { alerts, pendingBans, blanketBans, venues, staff } = Route.useLoaderData();
+		const { alerts, pendingBans, blanketBans, venues, staff } =
+			Route.useLoaderData();
 
 		return (
 			<ContentContainer>
@@ -71,7 +70,7 @@ export const Route = createFileRoute("/")({
 							<LiaExclamationSolid />
 							Alerts
 						</Tabs.Trigger>
-						{user.role === "ADMIN" ? (
+						{user.role === Role.ADMIN ? (
 							<Tabs.Trigger value="pending-bans" flexShrink={0}>
 								<LiaExclamationSolid />
 								Pending Bans
@@ -96,15 +95,15 @@ export const Route = createFileRoute("/")({
 					</Tabs.List>
 
 					<Tabs.Content value="alerts">
-						{isApiRequestError(alerts) || isAxiosError(alerts) ? (
+						{isErrorCheck(alerts) ? (
 							<Text>Cannot fetch alerts</Text>
 						) : (
-							<TabAlerts alerts={alerts} />
+							<TabAlerts alerts={alerts} userRole={user.role} />
 						)}
 					</Tabs.Content>
 
 					<Tabs.Content value="pending-bans">
-						{isApiRequestError(pendingBans) || isAxiosError(pendingBans) ? (
+						{isErrorCheck(pendingBans) ? (
 							<Text>Cannot fetch pending bans</Text>
 						) : (
 							<TabPendingBans pendingBans={pendingBans} />
@@ -116,7 +115,7 @@ export const Route = createFileRoute("/")({
 					</Tabs.Content>
 
 					<Tabs.Content value="blanket-bans">
-						{isApiRequestError(blanketBans) || isAxiosError(blanketBans) ? (
+						{isErrorCheck(blanketBans) ? (
 							<Text>Cannot fetch pending bans</Text>
 						) : (
 							<TabBlanketBans blanketBans={blanketBans} />
@@ -124,14 +123,14 @@ export const Route = createFileRoute("/")({
 					</Tabs.Content>
 
 					<Tabs.Content value="venues">
-						{isApiRequestError(venues) || isAxiosError(venues) ? (
+						{isErrorCheck(venues) ? (
 							<Text>Cannot fetch venues</Text>
 						) : (
 							<TabVenues venues={venues} />
 						)}
 					</Tabs.Content>
 					<Tabs.Content value="staff">
-						{isApiRequestError(staff) || isAxiosError(staff) ? (
+						{isErrorCheck(staff) ? (
 							<Text>Cannot fetch staff</Text>
 						) : (
 							<TabStaff staff={staff} />

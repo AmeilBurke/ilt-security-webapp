@@ -1,11 +1,13 @@
 import { Button, Field, Input } from "@chakra-ui/react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
+import { isAxiosError } from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import getJwt from "@/api-requests/authentication/getJwt";
 import PageCreate from "@/components/pages/PageCreate";
 import { PasswordInput } from "@/components/ui/password-input";
 import { isErrorCheck } from "@/utils";
+import { isApiRequestError } from "@/utils/isApiRequestError";
 import signInImage from "../assets/sign-in.webp";
 
 export const Route = createFileRoute("/sign-in")({
@@ -25,11 +27,13 @@ function RouteComponent() {
 		setLoading(true);
 
 		try {
-			const jwtResult = await getJwt(email, password)
-			const isError = isErrorCheck(jwtResult)
+			const jwtResult = await getJwt(email, password);
+			const isError = isErrorCheck(jwtResult);
 
 			if (isError) {
-				console.log(jwtResult)
+				if (isApiRequestError(jwtResult) && jwtResult.statusCode === 404) {
+					toast.error("Couldn't find account with that email");
+				}
 				return;
 			}
 
