@@ -36,12 +36,6 @@ const CardAlert = ({ alert, onSelectAlert, userRole }: CardAlertProps) => {
                             <Portal>
                                 <Menu.Positioner>
                                     <Menu.Content>
-                                        {/* <Menu.Item
-                                            value="edit"
-                                            onClick={() => onEditAlert(alert)}
-                                        >
-                                            Edit...
-                                        </Menu.Item> */}
                                         <Menu.Item
                                             value="delete"
                                             onClick={() => onSelectAlert(alert)}

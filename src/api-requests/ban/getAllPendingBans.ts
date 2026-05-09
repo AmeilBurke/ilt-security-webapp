@@ -1,13 +1,13 @@
 import type { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "@/utils/axiosInstance";
-import type { ApiRequestError, BannedPersonWithVenueBans } from "@/utils/interfaces";
+import type { ApiRequestError, Ban } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const getAllWithPendingBan = async (): Promise<BannedPersonWithVenueBans[] | AxiosError | ApiRequestError> => {
+const getAllPendingBans = async (): Promise<Ban[] | AxiosError | ApiRequestError> => {
 	return await axiosInstance
-		.get("/banned-people/pending")
+		.get("/bans/pending")
 		.then((response: AxiosResponse) => {
-			return response.data as BannedPersonWithVenueBans[];
+			return response.data as Ban[];
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {
@@ -18,4 +18,4 @@ const getAllWithPendingBan = async (): Promise<BannedPersonWithVenueBans[] | Axi
 		});
 };
 
-export default getAllWithPendingBan;
+export default getAllPendingBans;

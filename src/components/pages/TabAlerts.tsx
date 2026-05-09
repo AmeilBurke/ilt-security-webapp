@@ -16,6 +16,7 @@ import { isErrorCheck } from "@/utils";
 import type { Role } from "@/utils/enums";
 import type { Alert } from "@/utils/interfaces";
 import CardAlert from "../ui/CardAlert";
+import ComponentGrid from "../ui/ComponentGrid";
 
 export type TabAlertsProps = { alerts: Alert[]; userRole: Role };
 type DialogMode = "delete" | "edit" | null;
@@ -65,7 +66,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 			{alerts.length === 0 ? (
 				<Text w="full">No alerts have been uploaded</Text>
 			) : (
-				<SimpleGrid w="full" columns={{ base: 2, lg: 4 }} gap={8}>
+				<ComponentGrid>
 					{alerts.map((alert) => (
 						<CardAlert
 							key={alert.id}
@@ -74,7 +75,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 							userRole={userRole}
 						/>
 					))}
-				</SimpleGrid>
+				</ComponentGrid>
 			)}
 
 			<Dialog.Root

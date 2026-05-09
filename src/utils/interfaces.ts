@@ -74,6 +74,15 @@ export interface Ban {
 	endDate: Date;
 	isBlanketBan: boolean;
 	status: BanStatus;
+	createdBy?: {
+		name: string
+	},
+	person?: {
+		id: string;
+		name: string;
+		imagePath: string;
+	},
+	venueBans?: VenueBan[]
 }
 
 export interface BanWithVenueBans {

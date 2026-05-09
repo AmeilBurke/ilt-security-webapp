@@ -4,8 +4,8 @@ import { LiaExclamationSolid } from "react-icons/lia";
 import { LuSquareCheck } from "react-icons/lu";
 import getAllAlerts from "@/api-requests/alerts/getAllAlerts";
 import getProfileFromJwt from "@/api-requests/authentication/getProfileFromJwt";
+import getAllWithPendingBan from "@/api-requests/ban/getAllPendingBans";
 import getAllBlanketBannedPeople from "@/api-requests/banned-people/getAllBlanketBannedPeople";
-import getAllWithPendingBan from "@/api-requests/banned-people/getAllWithPendingBan";
 import getAllStaff from "@/api-requests/staff/getAllStaff";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
 import TabAlerts from "@/components/pages/TabAlerts";
@@ -103,10 +103,10 @@ export const Route = createFileRoute("/")({
 					</Tabs.Content>
 
 					<Tabs.Content value="pending-bans">
-						{isErrorCheck(pendingBans) ? (
+						{isErrorCheck(pendingBans) && isErrorCheck(pendingBans) ? (
 							<Text>Cannot fetch pending bans</Text>
 						) : (
-							<TabPendingBans pendingBans={pendingBans} />
+							<TabPendingBans pendingBans={pendingBans} venues={venues} />
 						)}
 					</Tabs.Content>
 

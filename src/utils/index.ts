@@ -1,4 +1,3 @@
-import type { DateValue } from "@chakra-ui/react";
 import { type AxiosError, isAxiosError } from "axios";
 import type { ApiRequestError } from "./interfaces";
 import { isApiRequestError } from "./isApiRequestError";
