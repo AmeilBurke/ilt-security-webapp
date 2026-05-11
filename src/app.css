@@ -1,0 +1,7 @@
+* {
+	text-transform: capitalize;
+}
+
+input {
+    text-transform: initial;
+}

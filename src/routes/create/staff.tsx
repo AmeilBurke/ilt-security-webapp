@@ -52,8 +52,6 @@ function RouteComponent() {
   const [name, setName] = useState("");
   const [roleValue, setRoleValue] = useState<Role | null>(null);
   const [loading, setLoading] = useState(false);
-
-  // Lazy initializer — allVenues won't change, so no need to recompute on every render
   const [venueValues, setVenueValues] = useState(() =>
     allVenues.map((venue) => ({
       label: venue.name,

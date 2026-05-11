@@ -1,3 +1,4 @@
+import type { DateValue } from "@chakra-ui/react";
 import type { BanStatus, Role } from "./enums";
 
 export interface IsSetupDone {
@@ -28,6 +29,17 @@ export type CreateBanDto = {
 	endDate: string;
 	isBlanketBan: boolean;
 	venueIds: string[];
+}
+
+export type UpdateBanDto = {
+	personId?: string;
+	reason?: string;
+	notes?: string;
+	startDate?: string;
+	endDate?: string;
+	isBlanketBan?: boolean;
+	status?: BanStatus;
+	venueIds?: string[];
 }
 
 export type ProfileDetailsFromJwt = {
@@ -64,6 +76,14 @@ export interface VenueBan {
 	endDate: string;
 }
 
+export interface CreateVenueBansDto {
+	banId: string,
+	venueDetails: {
+		venueId: string,
+		endDate: string,
+	}[]
+}
+
 export interface Ban {
 	id: string;
 	personId: string;
@@ -83,6 +103,18 @@ export interface Ban {
 		imagePath: string;
 	},
 	venueBans?: VenueBan[]
+}
+
+export interface PendingBan extends Ban {
+	createdBy: {
+		name: string
+	},
+	person: {
+		id: string;
+		name: string;
+		imagePath: string;
+	},
+	venueBans: VenueBan[]
 }
 
 export interface BanWithVenueBans {
@@ -145,4 +177,11 @@ export interface Venue {
 	phone: string;
 	venueManagers: VenueManager[];
 	dutyManagers: DutyManager[];
+}
+
+export interface VenueSelection {
+	label: string;
+	checked: boolean;
+	value: string;
+	endDate: DateValue[];
 }

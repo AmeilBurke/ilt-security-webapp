@@ -6,14 +6,28 @@ import {
 	Text,
 	VStack,
 } from "@chakra-ui/react";
-import { Link } from "@tanstack/react-router";
+import { Link, useRouter } from "@tanstack/react-router";
 import { useState } from "react";
+import type { BannedPerson } from "@/utils/interfaces";
 
-const TabBans = () => {
+export type TabPendingBansProps = {
+	allBanned: BannedPerson[];
+};
+
+const TabBans = ({ allBanned }: TabPendingBansProps) => {
+	const router = useRouter()
 	const [open, setOpen] = useState(false);
 
+	const openHandler = () => {
+		if (allBanned.length !== 0) {
+			setOpen(true);
+			return
+		}
+		router.navigate({ to: "/create/bannedPerson" })
+	};
+
 	return (
-		<VStack onClick={() => setOpen(true)}>
+		<VStack onClick={openHandler}>
 			<Button>Create A New Ban</Button>
 
 			<Dialog.Root
@@ -47,7 +61,7 @@ const TabBans = () => {
 					</Dialog.Positioner>
 				</Portal>
 			</Dialog.Root>
-		</VStack >
+		</VStack>
 	);
 };
 

@@ -1,10 +1,12 @@
-import { Tabs, Text, useTabs } from "@chakra-ui/react";
+import { Tabs, Text } from "@chakra-ui/react";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { useState } from "react";
 import { LiaExclamationSolid } from "react-icons/lia";
 import { LuSquareCheck } from "react-icons/lu";
 import getAllAlerts from "@/api-requests/alerts/getAllAlerts";
 import getProfileFromJwt from "@/api-requests/authentication/getProfileFromJwt";
 import getAllWithPendingBan from "@/api-requests/ban/getAllPendingBans";
+import getAllBannedPeople from "@/api-requests/banned-people/getAllBannedPeople";
 import getAllBlanketBannedPeople from "@/api-requests/banned-people/getAllBlanketBannedPeople";
 import getAllStaff from "@/api-requests/staff/getAllStaff";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
@@ -37,104 +39,91 @@ export const Route = createFileRoute("/")({
 		return { staff: result as ProfileDetailsFromJwt };
 	},
 	loader: async () => {
-		const [alerts, pendingBans, blanketBans, venues, staff] = await Promise.all(
-			[
+		const [alerts, pendingBans, blanketBans, venues, staff, allBanned] =
+			await Promise.all([
 				getAllAlerts(),
 				getAllWithPendingBan(),
 				getAllBlanketBannedPeople(),
 				getAllVenues(),
 				getAllStaff(),
-			],
-		);
+				getAllBannedPeople(),
+			]);
 
-		return { alerts, pendingBans, blanketBans, venues, staff };
+		return { alerts, pendingBans, blanketBans, venues, staff, allBanned };
 	},
 	component: () => {
-		const tabs = useTabs({
-			defaultValue: "alerts",
-		});
-
 		const { staff: user } = Route.useRouteContext();
-		const { alerts, pendingBans, blanketBans, venues, staff } =
-			Route.useLoaderData();
+		const { alerts, pendingBans, blanketBans, venues, staff, allBanned } = Route.useLoaderData();
+		const [activeTab, setActiveTab] = useState("alerts");
+
+		function TabError({ message }: { message: string }) {
+			return <Text>Cannot fetch {message}</Text>;
+		}
 
 		return (
 			<ContentContainer>
-				<Text textStyle="title" textTransform="capitalize">
-					Dashboard - {tabs.value}
-				</Text>
+				<Text textStyle="title" textTransform="capitalize">Dashboard - {activeTab}</Text>
 				<Text textStyle="muted">Welcome {capitalizeString(user.name)}</Text>
-				<Tabs.Root defaultValue="alerts">
+
+				<Tabs.Root value={activeTab} onValueChange={(e) => setActiveTab(e.value)}>
 					<Tabs.List overflowX="auto" overflowY="hidden" whiteSpace="nowrap">
-						<Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden">
-							<LiaExclamationSolid />
-							Alerts
-						</Tabs.Trigger>
-						{user.role === Role.ADMIN ? (
-							<Tabs.Trigger value="pending-bans" flexShrink={0}>
-								<LiaExclamationSolid />
-								Pending Bans
-							</Tabs.Trigger>
-						) : null}
-						<Tabs.Trigger value="bans" flexShrink={0}>
-							<LuSquareCheck />
-							Bans
-						</Tabs.Trigger>
-						<Tabs.Trigger value="blanket-bans" flexShrink={0}>
-							<LuSquareCheck />
-							Blanket Bans
-						</Tabs.Trigger>
-						<Tabs.Trigger value="venues" flexShrink={0}>
-							<LuSquareCheck />
-							Venues
-						</Tabs.Trigger>
-						<Tabs.Trigger value="staff" flexShrink={0}>
-							<LuSquareCheck />
-							Staff
-						</Tabs.Trigger>
+						<Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden"><LiaExclamationSolid />Alerts</Tabs.Trigger>
+						{
+							user.role === Role.ADMIN
+								? <Tabs.Trigger value="pending bans" flexShrink={0}><LiaExclamationSolid />Pending Bans</Tabs.Trigger>
+								: null
+						}
+						<Tabs.Trigger value="bans" flexShrink={0}><LuSquareCheck />Bans</Tabs.Trigger>
+						<Tabs.Trigger value="blanket bans" flexShrink={0}><LuSquareCheck />Blanket Bans</Tabs.Trigger>
+						<Tabs.Trigger value="venues" flexShrink={0}><LuSquareCheck />Venues</Tabs.Trigger>
+						<Tabs.Trigger value="staff" flexShrink={0}><LuSquareCheck />Staff</Tabs.Trigger>
 					</Tabs.List>
 
 					<Tabs.Content value="alerts">
-						{isErrorCheck(alerts) ? (
-							<Text>Cannot fetch alerts</Text>
-						) : (
-							<TabAlerts alerts={alerts} userRole={user.role} />
-						)}
+						{
+							isErrorCheck(alerts)
+								? <TabError message="Cannot fetch alerts" />
+								: <TabAlerts alerts={alerts} userRole={user.role} />
+						}
 					</Tabs.Content>
 
-					<Tabs.Content value="pending-bans">
-						{isErrorCheck(pendingBans) && isErrorCheck(pendingBans) ? (
-							<Text>Cannot fetch pending bans</Text>
-						) : (
-							<TabPendingBans pendingBans={pendingBans} venues={venues} />
-						)}
+					<Tabs.Content value="pending bans">
+						{
+							user.role !== Role.ADMIN || isErrorCheck(pendingBans) || isErrorCheck(venues) || isErrorCheck(allBanned)
+								? <TabError message="Cannot fetch pending bans" />
+								: <TabPendingBans pendingBans={pendingBans} venues={venues} allBanned={allBanned} />
+						}
 					</Tabs.Content>
 
 					<Tabs.Content value="bans">
-						<TabBans />
+						{
+							isErrorCheck(allBanned)
+							? <TabError message="Cannot fetch bans" />
+							: <TabBans allBanned={allBanned} />
+						}
 					</Tabs.Content>
 
-					<Tabs.Content value="blanket-bans">
-						{isErrorCheck(blanketBans) ? (
-							<Text>Cannot fetch pending bans</Text>
-						) : (
-							<TabBlanketBans blanketBans={blanketBans} />
-						)}
+					<Tabs.Content value="blanket bans">
+						{
+							isErrorCheck(blanketBans)
+								? <TabError message="Cannot fetch blanket bans" />
+								: <TabBlanketBans blanketBans={blanketBans} />
+						}
 					</Tabs.Content>
 
 					<Tabs.Content value="venues">
-						{isErrorCheck(venues) ? (
-							<Text>Cannot fetch venues</Text>
-						) : (
-							<TabVenues venues={venues} />
-						)}
+						{
+							isErrorCheck(venues)
+								? <TabError message="Cannot fetch venues" />
+								: <TabVenues venues={venues} />
+						}
 					</Tabs.Content>
 					<Tabs.Content value="staff">
-						{isErrorCheck(staff) ? (
-							<Text>Cannot fetch staff</Text>
-						) : (
-							<TabStaff staff={staff} />
-						)}
+						{
+							isErrorCheck(staff)
+								? <TabError message="Cannot fetch staff" />
+								: <TabStaff staff={staff} />
+						}
 					</Tabs.Content>
 				</Tabs.Root>
 			</ContentContainer>

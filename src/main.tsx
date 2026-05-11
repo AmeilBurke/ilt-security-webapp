@@ -8,6 +8,7 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import { Toaster } from "react-hot-toast";
+import "./app.css"
 
 const router = createRouter({ routeTree });
 
