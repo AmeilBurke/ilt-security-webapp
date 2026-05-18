@@ -176,10 +176,11 @@ const CardPendingBanTriggerContent = ({
 						</VStack>
 					</Dialog.Body>
 					<Dialog.Footer>
+                        {/* need to make a modal component */}
 						<ConfirmDeny banId={ban.id}>
 							<Button colorPalette="red">Deny</Button>
 						</ConfirmDeny>
-						<Button colorPalette="current">Approve</Button>
+						<Button colorPalette="current" >Approve</Button>
 					</Dialog.Footer>
 				</Dialog.Content>
 			</Dialog.Positioner>

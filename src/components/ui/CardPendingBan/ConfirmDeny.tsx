@@ -13,18 +13,26 @@ type ConfirmDenyProps = {
 const ConfirmDeny = ({ children, banId }: ConfirmDenyProps) => {
     const router = useRouter();
     const [confirmDenyModalOpen, setConfirmDenyModalOpen] = useState(false);
+    const [isLoading, setIsLoading] = useState(false)
 
     const handleBanDeny = async () => {
-        const result = await deleteBanById(banId);
+        setIsLoading(true);
+        try {
+            const result = await deleteBanById(banId);
 
-        if (isErrorCheck(result)) {
-            toast.error("Error while trying to deny ban. Try again later");
+            if (isErrorCheck(result)) {
+                toast.error("Error while trying to deny ban. Try again later");
+                return;
+            }
+
+            toast.success("Ban Denied");
             setConfirmDenyModalOpen(false);
-            return;
+            router.invalidate();
+        } catch {
+            toast.error("Unexpected error. Try again later");
+        } finally {
+            setIsLoading(false);
         }
-
-        toast.success("Ban Denied");
-        router.invalidate();
     };
 
     return (
@@ -47,9 +55,9 @@ const ConfirmDeny = ({ children, banId }: ConfirmDenyProps) => {
                         </Dialog.Body>
                         <Dialog.Footer>
                             <Dialog.ActionTrigger asChild>
-                                <Button variant="outline">Cancel</Button>
+                                <Button variant="outline" disabled={isLoading}>Cancel</Button>
                             </Dialog.ActionTrigger>
-                            <Button colorPalette="red" onClick={handleBanDeny}>
+                            <Button colorPalette="red" onClick={handleBanDeny} loading={isLoading}>
                                 Deny
                             </Button>
                         </Dialog.Footer>
