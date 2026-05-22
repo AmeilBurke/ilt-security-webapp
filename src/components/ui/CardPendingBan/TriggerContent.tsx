@@ -21,7 +21,7 @@ import type {
 } from "@/utils/interfaces";
 import BannedPersonSelector from "../BannedPerson/BannedPersonSelector";
 import CalenderInput from "../CalenderInput";
-import ConfirmDeny from "./ConfirmDeny";
+import ConfirmDialog from "../ConfirmDialog";
 
 type CardPendingBanTriggerProps = {
 	selectedBannedPerson: BannedPerson;
@@ -41,6 +41,18 @@ type CardPendingBanTriggerProps = {
 	onHandleVenueDateSelect: (index: number, dateValue: DateValue[]) => void;
 };
 
+// needs a re-write to simplify
+
+const denyDialogTrigger = (
+	<Button colorPalette='red' >Deny Ban</Button>
+)
+
+const denyDialogBody = (
+	<Text>
+		This action cannot be undone. <br /> <br /> This will deny & permanently delete the ban from the system.
+	</Text>
+)
+
 const CardPendingBanTriggerContent = ({
 	selectedBannedPerson,
 	originalSelectedBannedPerson,
@@ -58,18 +70,30 @@ const CardPendingBanTriggerContent = ({
 	onHandleGlobalDateSelect,
 	onHandleVenueDateSelect,
 }: CardPendingBanTriggerProps) => {
+
+	const handleDeleteBan = () => {
+		//delete ban
+	}
+
+	const denyDialogFooter = (
+		<HStack>
+			<Dialog.ActionTrigger>
+				<Button variant={'outline'}>Cancel</Button>
+			</Dialog.ActionTrigger>
+			<Button onClick={handleDeleteBan} colorPalette='red'>Deny Ban</Button>
+		</HStack>
+
+	)
+
+
 	return (
 		<Portal>
 			<Dialog.Backdrop />
 			<Dialog.Positioner>
 				<Dialog.Content>
 					<Dialog.Header>
-						<Dialog.Title>
-							Pending Ban Details For: {selectedBannedPerson.name}
-							<Text textStyle="muted" fontSize="sm" fontWeight="normal">
-								Edit any details by clicking on them
-							</Text>
-						</Dialog.Title>
+						<Dialog.Title>Pending Ban Details For: {selectedBannedPerson.name}</Dialog.Title>
+						<Dialog.Description fontSize="sm">Edit any details by clicking on them</Dialog.Description>
 						<Dialog.CloseTrigger asChild>
 							<CloseButton size="sm" />
 						</Dialog.CloseTrigger>
@@ -159,15 +183,14 @@ const CardPendingBanTriggerContent = ({
 											</Checkbox.Root>
 
 											<Box flex={1} textTransform="capitalize">
-												<CalenderInput
-													selectedDate={item.endDate}
-													onDateSelect={(date) =>
-														onHandleVenueDateSelect(index, date)
-													}
-													labelText=""
-													helperText={`Entering a date here will apply it to only ${item.label}`}
-													isDisabled={!item.checked}
-												/>
+												{item.checked && (
+													<CalenderInput
+														selectedDate={item.endDate}
+														onDateSelect={(date) => onHandleVenueDateSelect(index, date)}
+														labelText=""
+														helperText={`Entering a date here will apply it to only ${item.label}`}
+													/>
+												)}
 											</Box>
 										</HStack>
 									);
@@ -176,11 +199,14 @@ const CardPendingBanTriggerContent = ({
 						</VStack>
 					</Dialog.Body>
 					<Dialog.Footer>
-                        {/* need to make a modal component */}
-						<ConfirmDeny banId={ban.id}>
-							<Button colorPalette="red">Deny</Button>
-						</ConfirmDeny>
-						<Button colorPalette="current" >Approve</Button>
+						<ConfirmDialog
+							trigger={denyDialogTrigger}
+							title="Deny Ban"
+							body={denyDialogBody}
+							footer={denyDialogFooter}
+							size='cover'
+						/>
+						<Button colorPalette="current">Approve</Button>
 					</Dialog.Footer>
 				</Dialog.Content>
 			</Dialog.Positioner>

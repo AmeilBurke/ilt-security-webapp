@@ -39,7 +39,7 @@ const CalenderInput = ({ selectedDate, onDateSelect, labelText, helperText, isDi
                 </DatePicker.Control>
                 {
                     helperText
-                        ? <Field.HelperText>{helperText}</Field.HelperText>
+                        ? <Field.HelperText textTransform="initial" >{helperText}</Field.HelperText>
                         : null
                 }
                 <Portal>

@@ -26,7 +26,7 @@ const CardAlert = ({ alert, onSelectAlert, userRole }: CardAlertProps) => {
             <VStack w="full" alignItems="flex-start" gap={1}>
                 <HStack w="full" justifyContent={"space-between"}>
                     <Text>{capitalizeString(alert.reason)}</Text>
-                    {userRole !== Role.ADMIN ? null : (
+                    {userRole === Role.ADMIN && (
                         <Menu.Root>
                             <Menu.Trigger asChild>
                                 <IconButton variant="ghost">
@@ -39,6 +39,7 @@ const CardAlert = ({ alert, onSelectAlert, userRole }: CardAlertProps) => {
                                         <Menu.Item
                                             value="delete"
                                             onClick={() => onSelectAlert(alert)}
+                                            cursor='pointer'
                                         >
                                             Delete...
                                         </Menu.Item>
@@ -50,7 +51,7 @@ const CardAlert = ({ alert, onSelectAlert, userRole }: CardAlertProps) => {
                 </HStack>
                 <Text fontSize="small" color="gray.500">
                     Uploaded by {capitalizeString(alert.createdBy.name)} @{" "}
-                    {dayjs(alert.startDate).format("hh:mm a")}
+                    {dayjs(alert.startDate).format("hh:mm A")}
                 </Text>
             </VStack>
         </VStack>

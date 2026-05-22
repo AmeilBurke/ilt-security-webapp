@@ -91,7 +91,7 @@ export interface Ban {
 	reason: string;
 	notes?: string;
 	startDate: Date;
-	endDate: Date;
+	// endDate: Date;
 	isBlanketBan: boolean;
 	status: BanStatus;
 	createdBy?: {
@@ -185,3 +185,5 @@ export interface VenueSelection {
 	value: string;
 	endDate: DateValue[];
 }
+
+export type DialogMode = "delete" | null;

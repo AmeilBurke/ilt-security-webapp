@@ -69,9 +69,9 @@ export const Route = createFileRoute("/")({
 					<Tabs.List overflowX="auto" overflowY="hidden" whiteSpace="nowrap">
 						<Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden"><LiaExclamationSolid />Alerts</Tabs.Trigger>
 						{
-							user.role === Role.ADMIN
-								? <Tabs.Trigger value="pending bans" flexShrink={0}><LiaExclamationSolid />Pending Bans</Tabs.Trigger>
-								: null
+							user.role === Role.ADMIN && (
+								<Tabs.Trigger value="pending bans" flexShrink={0}><LiaExclamationSolid />Pending Bans</Tabs.Trigger>
+							)
 						}
 						<Tabs.Trigger value="bans" flexShrink={0}><LuSquareCheck />Bans</Tabs.Trigger>
 						<Tabs.Trigger value="blanket bans" flexShrink={0}><LuSquareCheck />Blanket Bans</Tabs.Trigger>
@@ -98,8 +98,8 @@ export const Route = createFileRoute("/")({
 					<Tabs.Content value="bans">
 						{
 							isErrorCheck(allBanned)
-							? <TabError message="Cannot fetch bans" />
-							: <TabBans allBanned={allBanned} />
+								? <TabError message="Cannot fetch bans" />
+								: <TabBans allBanned={allBanned} />
 						}
 					</Tabs.Content>
 

@@ -37,7 +37,6 @@ const ConfirmDeny = ({ children, banId }: ConfirmDenyProps) => {
 
     return (
         <Dialog.Root
-            lazyMount
             open={confirmDenyModalOpen}
             onOpenChange={(e) => setConfirmDenyModalOpen(e.open)}
             placement="center"

@@ -16,17 +16,22 @@ import { capitalizeString } from "@/utils";
 import type { BannedPerson } from "@/utils/interfaces";
 
 type BannedPersonSelectorProps = {
-    selectedBannedPerson: BannedPerson,
-    originalSelectedBannedPerson: BannedPerson,
-    onBannedPersonSelect: (bannedPerson: BannedPerson) => void,
+    selectedBannedPerson: BannedPerson | undefined,
+    onBannedPersonSelect: (bannedPerson: BannedPerson | undefined) => void,
     allBanned: BannedPerson[]
+    originalSelectedBannedPerson?: BannedPerson | undefined,
 }
 
-const BannedPersonSelector = ({ selectedBannedPerson, originalSelectedBannedPerson, onBannedPersonSelect, allBanned }: BannedPersonSelectorProps) => {
+const BannedPersonSelector = ({ selectedBannedPerson, onBannedPersonSelect, allBanned, originalSelectedBannedPerson }: BannedPersonSelectorProps) => {
     const [searchValue, setSearchValue] = useState("");
 
     const handleClear = () => {
-        onBannedPersonSelect(originalSelectedBannedPerson)
+        if (originalSelectedBannedPerson) {
+            onBannedPersonSelect(originalSelectedBannedPerson)
+            return
+        }
+
+        onBannedPersonSelect(undefined)
     }
 
     const handlePersonSelect = (id: string) => {
@@ -67,23 +72,11 @@ const BannedPersonSelector = ({ selectedBannedPerson, originalSelectedBannedPers
                             ? selectedBannedPerson.name
                             : "Select banned person here"}
                     </Text>
-
-
-
                 </Collapsible.Trigger>
-
-                {/* {selectedBannedPerson.id !== originalSelectedBannedPerson.id && (
-                    <IconButton
-                        variant="ghost"
-                        onClick={handleClear}
-                    >
-                        <LiaBackspaceSolid />
-                    </IconButton>
-                )} */}
-
                 <IconButton
                     variant="ghost"
                     onClick={handleClear}
+                    opacity={selectedBannedPerson ? 1 : 0}
                 >
                     <LiaBackspaceSolid />
                 </IconButton>
