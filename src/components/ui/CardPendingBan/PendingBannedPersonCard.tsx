@@ -2,7 +2,7 @@ import { Image, Text, VStack } from "@chakra-ui/react";
 import dayjs from "dayjs";
 import { capitalizeString } from "@/utils";
 
-type CardPendingBanTriggerProps = {
+type PendingBannedPersonCardProps = {
     imagePath: string;
     name: string;
     createdBy: string;
@@ -10,7 +10,7 @@ type CardPendingBanTriggerProps = {
     reason: string;
 };
 
-const CardPendingBanTrigger = ({ imagePath, name, createdBy, startDate, reason }: CardPendingBanTriggerProps) => {
+const PendingBannedPersonCard = ({ imagePath, name, createdBy, startDate, reason }: PendingBannedPersonCardProps) => {
     return (
         <VStack
             h="100%"
@@ -49,4 +49,4 @@ const CardPendingBanTrigger = ({ imagePath, name, createdBy, startDate, reason }
     );
 };
 
-export default CardPendingBanTrigger;
+export default PendingBannedPersonCard;

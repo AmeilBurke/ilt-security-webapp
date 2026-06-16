@@ -14,28 +14,29 @@ import { isErrorCheck } from "@/utils";
 import type { Role } from "@/utils/enums";
 import type { Alert } from "@/utils/interfaces";
 import CardAlert from "../ui/CardAlert";
+import ComponentDialog from "../ui/ComponentDialog";
 import ComponentGrid from "../ui/ComponentGrid";
 
 export type TabAlertsProps = {
 	alerts: Alert[];
-	userRole: Role
+	userRole: Role;
 };
 
-type DialogMode = "delete" | null;
+// refactor each page to use updated types & create reused components
 
 const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 	const router = useRouter();
 	const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
-	const [dialogMode, setDialogMode] = useState<DialogMode>(null);
+	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
 	const openDialog = (alert: Alert) => {
 		setSelectedAlertId(alert.id);
-		setDialogMode("delete");
+		setIsDialogOpen(true);
 	};
 
 	const closeDialog = () => {
 		setSelectedAlertId(null);
-		setDialogMode(null);
+		setIsDialogOpen(false);
 	};
 
 	const handleDeleteAlert = async (alertId: string) => {
@@ -71,48 +72,25 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 				</ComponentGrid>
 			}
 
-			<Dialog.Root
-				size="xl"
-				placement="center"
-				role="alertdialog"
-				closeOnInteractOutside
-				open={dialogMode !== null}
-				onOpenChange={(e) => {
-					if (!e.open) closeDialog();
-				}}
-			>
-				<Portal>
-					<Dialog.Backdrop />
-					<Dialog.Positioner>
-						<Dialog.Content>
-							<Dialog.CloseTrigger asChild>
-								<CloseButton />
-							</Dialog.CloseTrigger>
-
-							<Dialog.Header>
-								<Dialog.Title>Confirm Delete</Dialog.Title>
-							</Dialog.Header>
-							<Dialog.Body>
-								<Text>
-									Are you sure you want to delete this item? This action
-									cannot be undone.
-								</Text>
-							</Dialog.Body>
-							<Dialog.Footer>
-								<Button variant="outline" onClick={closeDialog}>
-									Cancel
-								</Button>
-								<Button
-									onClick={() => selectedAlertId ? handleDeleteAlert(selectedAlertId) : null}
-									colorPalette="red"
-								>
-									Delete
-								</Button>
-							</Dialog.Footer>
-						</Dialog.Content>
-					</Dialog.Positioner>
-				</Portal>
-			</Dialog.Root>
+			<ComponentDialog
+				isOpen={isDialogOpen}
+				title="Confirm Delete"
+				body={<Text>Are you sure you want to delete this item? This action cannot be undone.</Text>}
+				footer={
+					<>
+						<Button variant="outline" onClick={closeDialog}>
+							Cancel
+						</Button>
+						<Button
+							onClick={() => selectedAlertId ? handleDeleteAlert(selectedAlertId) : null}
+							colorPalette="red"
+						>
+							Delete
+						</Button>
+					</>
+				}
+				onCloseDialog={() => closeDialog()}
+			/>
 		</VStack >
 	);
 };

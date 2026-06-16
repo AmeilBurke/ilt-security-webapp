@@ -6,42 +6,6 @@ export interface IsSetupDone {
 	isInitialVenueCreated: boolean;
 }
 
-export interface CreateStaffDto {
-	email: string;
-	password: string;
-	name: string;
-	role: Role;
-	venueManagerAssignments?: string[];
-	dutyManagerAssignments?: string[];
-}
-
-export type CreateAlertDto = {
-	reason: string;
-	personId?: string;
-	imagePath?: string;
-};
-
-export type CreateBanDto = {
-	personId: string;
-	reason: string;
-	notes?: string;
-	startDate: string;
-	endDate: string;
-	isBlanketBan: boolean;
-	venueIds: string[];
-}
-
-export type UpdateBanDto = {
-	personId?: string;
-	reason?: string;
-	notes?: string;
-	startDate?: string;
-	endDate?: string;
-	isBlanketBan?: boolean;
-	status?: BanStatus;
-	venueIds?: string[];
-}
-
 export type ProfileDetailsFromJwt = {
 	id: string,
 	email: string,
@@ -73,15 +37,16 @@ export interface VenueBan {
 	id: string;
 	banId: string;
 	venueId: string;
-	endDate: string;
+	ban?: Ban;
+	venue?: Venue;
 }
 
-export interface CreateVenueBansDto {
-	banId: string,
-	venueDetails: {
-		venueId: string,
-		endDate: string,
-	}[]
+export interface BannedPerson {
+	id: string;
+	name: string;
+	imagePath: string;
+	bans?: Ban[];
+	alerts?: Alert;
 }
 
 export interface Ban {
@@ -91,60 +56,25 @@ export interface Ban {
 	reason: string;
 	notes?: string;
 	startDate: Date;
-	// endDate: Date;
-	isBlanketBan: boolean;
-	status: BanStatus;
-	createdBy?: {
-		name: string
-	},
-	person?: {
-		id: string;
-		name: string;
-		imagePath: string;
-	},
-	venueBans?: VenueBan[]
-}
-
-export interface PendingBan extends Ban {
-	createdBy: {
-		name: string
-	},
-	person: {
-		id: string;
-		name: string;
-		imagePath: string;
-	},
-	venueBans: VenueBan[]
-}
-
-export interface BanWithVenueBans {
-	id: string;
-	personId: string;
-	createdById: string;
-	reason: string;
-	notes?: string;
-	startDate: Date;
 	endDate: Date;
 	isBlanketBan: boolean;
 	status: BanStatus;
-	venueBans: VenueBan[]
+	venueBans: VenueBan[];
+	createdBy?: {
+		name: string
+	};
+	person?: BannedPerson;
 }
 
-
-export interface BannedPerson {
-	id: string;
-	name: string;
-	imagePath: string;
-	bans: Ban[];
-	alerts: Alert[];
-}
-
-export interface BannedPersonWithVenueBans {
-	id: string;
-	name: string;
-	imagePath: string;
-	bans: BanWithVenueBans[];
-	alerts: Alert[];
+export interface Alert {
+	id: string
+	personId?: string
+	reason: string
+	imagePath: string
+	startDate: Date
+	createdById: string
+	createdBy: Staff
+	bannedPerson?: BannedPerson
 }
 
 export interface Staff {
@@ -155,18 +85,6 @@ export interface Staff {
 	venueManagerAssignments: VenueManager[];
 	dutyManagerAssignments: DutyManager[];
 	bansCreated: Ban[];
-}
-
-export interface Alert {
-	id: string;
-	personId: number | null;
-	reason: string;
-	imagePath: string;
-	startDate: string;
-	createdById: string;
-	createdBy: {
-		name: string;
-	};
 }
 
 export interface Venue {
@@ -183,7 +101,6 @@ export interface VenueSelection {
 	label: string;
 	checked: boolean;
 	value: string;
-	endDate: DateValue[];
 }
 
 export type DialogMode = "delete" | null;

@@ -1,50 +1,47 @@
-import {
-    CloseButton,
-    type ConditionalValue,
-    Dialog,
-    Portal,
-} from "@chakra-ui/react";
+import { CloseButton, Dialog, Portal } from "@chakra-ui/react";
 
-type ComponentDialogProps = {
-    title: string;
-    dialogTrigger: React.ReactNode,
-    bodyContent: React.ReactNode;
-    footerContent: React.ReactNode;
+export type BanDetailsDialogProps = {
     isOpen: boolean;
-    onOpenSelect: (open: boolean) => void;
-    size?: ConditionalValue<"sm" | "xs" | "md" | "lg" | "xl" | "cover">;
+    onCloseDialog: () => void;
+    title: string;
+    body: React.ReactNode;
+    footer?: React.ReactNode;
+    onCloseFinish?: () => void;
 };
 
-const ComponentDialog = ({
-    title,
-    dialogTrigger,
-    bodyContent,
-    footerContent,
-    isOpen,
-    onOpenSelect,
-    size
-}: ComponentDialogProps) => {
+const ComponentDialog = ({ isOpen, onCloseDialog, title, body, footer, onCloseFinish }: BanDetailsDialogProps) => {
     return (
-        <Dialog.Root open={isOpen} placement="center" scrollBehavior="inside" onOpenChange={(e) => onOpenSelect(e.open)} size={size ? size : 'md'}>
-            <Dialog.Trigger asChild>
-                {dialogTrigger}
-            </Dialog.Trigger>
+        <Dialog.Root
+            size="xl"
+            placement="center"
+            role="alertdialog"
+            closeOnInteractOutside
+            open={isOpen}
+            onOpenChange={(e) => {
+                if (!e.open) onCloseDialog();
+            }}
+            onExitComplete={() => {
+                if (onCloseFinish) {
+                    onCloseFinish()
+                }
+            }}
+        >
             <Portal>
                 <Dialog.Backdrop />
                 <Dialog.Positioner>
                     <Dialog.Content>
+                        <Dialog.CloseTrigger asChild>
+                            <CloseButton />
+                        </Dialog.CloseTrigger>
                         <Dialog.Header>
                             <Dialog.Title>{title}</Dialog.Title>
                         </Dialog.Header>
                         <Dialog.Body>
-                            {bodyContent}
+                            {body}
                         </Dialog.Body>
                         <Dialog.Footer>
-                            {footerContent}
+                            {footer}
                         </Dialog.Footer>
-                        <Dialog.CloseTrigger asChild>
-                            <CloseButton size="sm" />
-                        </Dialog.CloseTrigger>
                     </Dialog.Content>
                 </Dialog.Positioner>
             </Portal>

@@ -37,7 +37,7 @@ export const Route = createFileRoute("/create/alert")({
     }
 
     const allBannedPeopleWithoutAlerts = allBannedPeople.filter((person) => {
-      return person.alerts.length === 0
+      return !person.alerts
     })
     return allBannedPeopleWithoutAlerts as BannedPerson[];
   },
@@ -116,7 +116,7 @@ function RouteComponent() {
           <Text textStyle="muted">Fill in the details below to create an alert</Text>
         </VStack>
         {
-          allBannedPeople.every((person) => { return person.alerts.length === 1 })
+          allBannedPeople.every((person) => { return person.alerts })
             ? null
             : <Collapsible.Root w="full" px={2} borderBottomColor='blackAlpha.300' borderWidth='1px'>
               <Collapsible.Trigger

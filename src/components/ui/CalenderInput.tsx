@@ -5,7 +5,8 @@ export type CalenderInputProps = {
     onDateSelect: (dateValue: DateValue[]) => void,
     labelText: string,
     helperText?: string,
-    isDisabled?: boolean
+    isDisabled?: boolean,
+    placeholder?: string,
 }
 
 const formatDate = (date: DateValue) => {
@@ -15,7 +16,7 @@ const formatDate = (date: DateValue) => {
     return `${day}/${month}/${year}`;
 };
 
-const CalenderInput = ({ selectedDate, onDateSelect, labelText, helperText, isDisabled }: CalenderInputProps) => {
+const CalenderInput = ({ selectedDate, onDateSelect, labelText, helperText, isDisabled, placeholder }: CalenderInputProps) => {
     return (
         <Field.Root>
             <DatePicker.Root
@@ -34,7 +35,7 @@ const CalenderInput = ({ selectedDate, onDateSelect, labelText, helperText, isDi
                     </Field.Label>
                 </DatePicker.Label>
                 <DatePicker.Control>
-                    <DatePicker.Input />
+                    <DatePicker.Input placeholder={placeholder} />
                     <DatePicker.IndicatorGroup />
                 </DatePicker.Control>
                 {

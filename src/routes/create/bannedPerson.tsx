@@ -139,7 +139,8 @@ function RouteComponent() {
       }
 
       toast.success("Banned person was created");
-      router.navigate({ to: "/" });
+      await router.invalidate();
+      await router.navigate({ to: "/" });
     } catch (error) {
       router.navigate({
         to: "/error",

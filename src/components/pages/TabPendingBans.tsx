@@ -21,28 +21,28 @@ import toast from "react-hot-toast";
 import deleteBanById from "@/api-requests/ban/deleteBanById";
 import updateBanById from "@/api-requests/ban/updateBanById";
 import { isErrorCheck } from "@/utils";
+import type { UpdateBanDto } from "@/utils/dtos";
 import type {
+	Ban,
 	BannedPerson,
 	DialogMode,
-	PendingBan,
-	UpdateBanDto,
 	Venue,
 	VenueSelection,
 } from "@/utils/interfaces";
 import BannedPersonSelector from "../ui/BannedPerson/BannedPersonSelector";
 import CalenderInput from "../ui/CalenderInput";
-import CardPendingBanTrigger from "../ui/CardPendingBan/Trigger";
+import CardPendingBanTrigger from "../ui/CardPendingBan/PendingBannedPersonCard";
 import ComponentGrid from "../ui/ComponentGrid";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
 export type TabPendingBansProps = {
-	pendingBans: PendingBan[];
+	pendingBans: Ban[];
 	venues: Venue[];
 	allBanned: BannedPerson[];
 };
 
 const computeVenueSelections = (
-	pendingBan: PendingBan,
+	pendingBan: Ban,
 	venues: Venue[],
 ): VenueSelection[] => {
 	const bannedVenueIds = new Set(
@@ -70,8 +70,9 @@ const TabPendingBans = ({
 	allBanned,
 }: TabPendingBansProps) => {
 	const router = useRouter();
-	const [selectedPendingBan, setSelectedPendingBan] =
-		useState<PendingBan | null>(null);
+	const [selectedPendingBan, setSelectedPendingBan] = useState<Ban | null>(
+		null,
+	);
 	const [dialogMode, setDialogMode] = useState<DialogMode>(null);
 	const [selectedBannedPerson, setSelectedBannedPerson] = useState<
 		BannedPerson | undefined
@@ -103,7 +104,7 @@ const TabPendingBans = ({
 		return <Text>No current pending bans</Text>;
 	}
 
-	const openDialog = (pendingBan: PendingBan) => {
+	const openDialog = (pendingBan: Ban) => {
 		setSelectedPendingBan(pendingBan);
 		setSelectedBannedPerson(
 			allBanned.find((person) => person.id === pendingBan.personId),
@@ -159,9 +160,6 @@ const TabPendingBans = ({
 	);
 
 	const handleApprovePendingBan = async (pendingBanId: string) => {
-		console.log(endDate);
-		console.log(noneChecked);
-		console.log(reason);
 		if (
 			!selectedBannedPerson ||
 			reason === "" ||
@@ -192,12 +190,7 @@ const TabPendingBans = ({
 			venueIds: venueIdsToBanFrom,
 		};
 
-		console.log(updateBanDto)
-
-		const approveResult = await updateBanById(
-			pendingBanId,
-			updateBanDto,
-		);
+		const approveResult = await updateBanById(pendingBanId, updateBanDto);
 
 		if (isErrorCheck(approveResult)) {
 			toast.error("Could not approve pending ban, try again later");
@@ -236,13 +229,17 @@ const TabPendingBans = ({
 			<ComponentGrid>
 				{validBans.map((ban) => (
 					<Box key={ban.id} onClick={() => openDialog(ban)} cursor="pointer">
-						<CardPendingBanTrigger
-							imagePath={ban.person.imagePath}
-							name={ban.person.name}
-							createdBy={ban.createdBy.name}
-							startDate={ban.startDate}
-							reason={ban.reason}
-						/>
+						{
+							ban.person && ban.createdBy && (
+								<CardPendingBanTrigger
+									imagePath={ban.person.imagePath}
+									name={ban.person.name}
+									createdBy={ban.createdBy.name}
+									startDate={ban.startDate}
+									reason={ban.reason}
+								/>
+							)
+						}
 					</Box>
 				))}
 			</ComponentGrid>
