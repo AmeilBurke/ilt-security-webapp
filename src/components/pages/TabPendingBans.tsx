@@ -50,16 +50,10 @@ const computeVenueSelections = (
 	);
 
 	return venues.map((venue) => {
-		const existingBan = pendingBan.venueBans?.find(
-			(venueBan) => venueBan.venueId === venue.id,
-		);
 		return {
 			label: venue.name,
 			checked: bannedVenueIds.has(venue.id),
-			value: venue.id,
-			endDate: existingBan
-				? [parseDate(existingBan.endDate.split("T")[0])]
-				: ([] as DateValue[]),
+			value: venue.id
 		};
 	});
 };
@@ -160,13 +154,21 @@ const TabPendingBans = ({
 	);
 
 	const handleApprovePendingBan = async (pendingBanId: string) => {
+
+		if (!reason && !selectedPendingBan?.reason) {
+			toast.error("Missing reason.");
+			return;
+		}
+
+		if (endDate.length === 0 && !selectedPendingBan?.endDate) {
+			toast.error("Missing end date.");
+			return;
+		}
+
 		if (
-			!selectedBannedPerson ||
-			reason === "" ||
-			endDate.length === 0 ||
 			noneChecked
 		) {
-			toast.error("Missing needed details.");
+			toast.error("Select at least one venue to ban ths person from.");
 			return;
 		}
 
@@ -178,13 +180,13 @@ const TabPendingBans = ({
 				return value.value;
 			});
 
+			console.log(endDate)
+
 		const updateBanDto: UpdateBanDto = {
 			personId: selectedBannedPerson?.id,
 			reason: reason,
 			notes: notes,
-			endDate: dayjs(
-				`${endDate[0].year} / ${endDate[0].month}/${endDate[0].day}`,
-			).toISOString(),
+			endDate: endDate.length > 0 ? dayjs(`${endDate[0].year}/${endDate[0].month}/${endDate[0].day}`).toISOString() : undefined,
 			isBlanketBan: allChecked,
 			status: "APPROVED",
 			venueIds: venueIdsToBanFrom,
@@ -292,7 +294,7 @@ const TabPendingBans = ({
 										<Input
 											onChange={(e) => setNotes(e.target.value)}
 											placeholder={
-												selectedPendingBan?.notes !== ""
+												selectedPendingBan?.notes
 													? selectedPendingBan?.notes
 													: "Enter extra details here if needed"
 											}
@@ -304,7 +306,7 @@ const TabPendingBans = ({
 										selectedDate={endDate}
 										onDateSelect={handleGlobalDateSelect}
 										labelText="Ban End Date"
-										helperText="Dates can be changed per venue by going into the venue & viewing the ban"
+										placeholder={dayjs(selectedPendingBan?.endDate).format("DD/MM/YYYY")}
 									/>
 
 									<Stack w="full" gap={4} align="flex-start">

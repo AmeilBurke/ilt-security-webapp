@@ -10,6 +10,7 @@ import {
 } from "@chakra-ui/react";
 import { Link, useRouter } from "@tanstack/react-router";
 import dayjs from "dayjs";
+import utc from "dayjs/plugin/utc";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import updateBanById from "@/api-requests/ban/updateBanById";
@@ -33,6 +34,8 @@ export type TabBlanketBansProps = {
 	userRole: Role;
 	venues: Venue[];
 };
+
+dayjs.extend(utc);
 
 const computeVenueSelections = (
 	ban: Ban,
@@ -132,9 +135,7 @@ const TabBlanketBans = ({
 			notes: notes || selectedBan?.notes,
 			endDate:
 				endDate.length !== 0
-					? dayjs(
-						`${endDate[0].year} / ${endDate[0].month}/${endDate[0].day}`,
-					).toISOString()
+					? dayjs.utc(`${endDate[0].year}/${endDate[0].month}/${endDate[0].day}`).toISOString()
 					: undefined,
 			isBlanketBan: allChecked,
 			venueIds: venueIdsToBanFrom,
@@ -198,19 +199,17 @@ const TabBlanketBans = ({
 				/>
 			</VStack>
 
-			{
-				blanketBansFiltered.length > 0 && (
-					<Field.Root required>
-						<Field.Label>Search Through Bans Here</Field.Label>
-						<Input
-							value={searchValue}
-							onChange={(event) => setSearchValue(event.target.value)}
-							placeholder="Search Bans Here"
-							variant="flushed"
-						/>
-					</Field.Root>
-				)
-			}
+			{blanketBansFiltered.length > 0 && (
+				<Field.Root required>
+					<Field.Label>Search Through Bans Here</Field.Label>
+					<Input
+						value={searchValue}
+						onChange={(event) => setSearchValue(event.target.value)}
+						placeholder="Search Bans Here"
+						variant="flushed"
+					/>
+				</Field.Root>
+			)}
 
 			<ComponentGrid>
 				{blanketBansFiltered.length === 0 ? (
