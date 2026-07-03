@@ -3,7 +3,7 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewVenue = async () => {
+const getAllVenues = async () => {
 	return await axiosInstance
 		.get("/venues")
 		.then((response: AxiosResponse) => {
@@ -18,4 +18,4 @@ const createNewVenue = async () => {
 		});
 };
 
-export default createNewVenue;
+export default getAllVenues;

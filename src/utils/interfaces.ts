@@ -25,6 +25,7 @@ export interface VenueManager {
 	id: string;
 	userId: string;
 	venueId: string;
+	staff? : Staff;
 }
 
 export interface DutyManager {

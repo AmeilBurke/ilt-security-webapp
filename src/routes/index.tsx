@@ -59,8 +59,9 @@ export const Route = createFileRoute("/")({
 			return <Text>Cannot fetch {message}</Text>;
 		}
 
+		// need to figure out vetical tabs for mobile: https://chakra-ui.com/docs/components/tabs#members
 		return (
-			<Box pt={12}>
+			<Box>
 				<ContentContainer>
 					<Text textStyle="title" textTransform="capitalize">Dashboard - {activeTab}</Text>
 					<Text textStyle="muted" textTransform="capitalize" >Welcome {user.name}</Text>
@@ -106,7 +107,7 @@ export const Route = createFileRoute("/")({
 							{
 								isErrorCheck(venues)
 									? <TabError message="Cannot fetch venues" />
-									: <TabVenues venues={venues} />
+									: <TabVenues venues={venues} userRole={user.role} />
 							}
 						</Tabs.Content>
 						<Tabs.Content value="staff">

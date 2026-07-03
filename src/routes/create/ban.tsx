@@ -18,6 +18,8 @@ import {
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import dayjs from "dayjs";
+import customParseFormat from "dayjs/plugin/customParseFormat";
+import utc from "dayjs/plugin/utc";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { LiaBackspaceSolid } from "react-icons/lia";
@@ -26,10 +28,14 @@ import createNewBan from "@/api-requests/ban/createNewBan";
 import getAllBannedPeople from "@/api-requests/banned-people/getAllBannedPeople";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
 import PageCreate from "@/components/pages/PageCreate";
+import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString, isErrorCheck } from "@/utils";
 import type { CreateBanDto } from "@/utils/dtos";
 import type { BannedPerson, Venue } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
+
+dayjs.extend(customParseFormat);
+dayjs.extend(utc);
 
 const formatDate = (date: DateValue) => {
 	const day = date.day.toString().padStart(2, "0");
@@ -117,12 +123,19 @@ function RouteComponent() {
 		const { year, month, day } = endDate[0];
 		const venueIds = venueValues.filter((v) => v.checked).map((v) => v.value);
 
+		const endDateIso = dayjs
+			.utc(
+				`${year}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}`,
+				"YYYY-MM-DD",
+			)
+			.toISOString();
+
 		const createBanDto: CreateBanDto = {
 			personId: selectedBannedPerson.id,
 			reason,
 			notes,
 			startDate: dayjs().toISOString(),
-			endDate: dayjs(`${year}/${month}/${day}`).toISOString(),
+			endDate: endDateIso,
 			isBlanketBan: allChecked,
 			venueIds,
 		};
@@ -265,6 +278,7 @@ function RouteComponent() {
 					format={formatDate}
 					variant="flushed"
 					placeholder="dd/mm/yyyy"
+					locale="en-NZ"
 					openOnClick
 					value={endDate}
 					onValueChange={(e) => setEndDate(e.value)}
@@ -356,11 +370,13 @@ function RouteComponent() {
 	);
 
 	return (
-		<PageCreate
-			heading="Create Ban"
-			subText="Fill out the details below to create a ban"
-			inputs={inputs}
-			button={button}
-		/>
+		<ContentContainer>
+			<PageCreate
+				heading="Create Ban"
+				subText="Fill out the details below to create a ban"
+				inputs={inputs}
+				button={button}
+			/>
+		</ContentContainer>
 	);
 }

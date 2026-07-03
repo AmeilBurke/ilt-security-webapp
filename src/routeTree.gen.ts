@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SignInRouteImport } from './routes/sign-in'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ErrorIndexRouteImport } from './routes/error/index'
+import { Route as VenueVenueIdRouteImport } from './routes/venue/$venueId'
 import { Route as CreateVenueRouteImport } from './routes/create/venue'
 import { Route as CreateStaffRouteImport } from './routes/create/staff'
 import { Route as CreateBannedPersonRouteImport } from './routes/create/bannedPerson'
@@ -32,6 +33,11 @@ const IndexRoute = IndexRouteImport.update({
 const ErrorIndexRoute = ErrorIndexRouteImport.update({
   id: '/error/',
   path: '/error/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const VenueVenueIdRoute = VenueVenueIdRouteImport.update({
+  id: '/venue/$venueId',
+  path: '/venue/$venueId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CreateVenueRoute = CreateVenueRouteImport.update({
@@ -74,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/create/bannedPerson': typeof CreateBannedPersonRoute
   '/create/staff': typeof CreateStaffRoute
   '/create/venue': typeof CreateVenueRoute
+  '/venue/$venueId': typeof VenueVenueIdRoute
   '/error/': typeof ErrorIndexRoute
 }
 export interface FileRoutesByTo {
@@ -85,6 +92,7 @@ export interface FileRoutesByTo {
   '/create/bannedPerson': typeof CreateBannedPersonRoute
   '/create/staff': typeof CreateStaffRoute
   '/create/venue': typeof CreateVenueRoute
+  '/venue/$venueId': typeof VenueVenueIdRoute
   '/error': typeof ErrorIndexRoute
 }
 export interface FileRoutesById {
@@ -97,6 +105,7 @@ export interface FileRoutesById {
   '/create/bannedPerson': typeof CreateBannedPersonRoute
   '/create/staff': typeof CreateStaffRoute
   '/create/venue': typeof CreateVenueRoute
+  '/venue/$venueId': typeof VenueVenueIdRoute
   '/error/': typeof ErrorIndexRoute
 }
 export interface FileRouteTypes {
@@ -110,6 +119,7 @@ export interface FileRouteTypes {
     | '/create/bannedPerson'
     | '/create/staff'
     | '/create/venue'
+    | '/venue/$venueId'
     | '/error/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -121,6 +131,7 @@ export interface FileRouteTypes {
     | '/create/bannedPerson'
     | '/create/staff'
     | '/create/venue'
+    | '/venue/$venueId'
     | '/error'
   id:
     | '__root__'
@@ -132,6 +143,7 @@ export interface FileRouteTypes {
     | '/create/bannedPerson'
     | '/create/staff'
     | '/create/venue'
+    | '/venue/$venueId'
     | '/error/'
   fileRoutesById: FileRoutesById
 }
@@ -144,6 +156,7 @@ export interface RootRouteChildren {
   CreateBannedPersonRoute: typeof CreateBannedPersonRoute
   CreateStaffRoute: typeof CreateStaffRoute
   CreateVenueRoute: typeof CreateVenueRoute
+  VenueVenueIdRoute: typeof VenueVenueIdRoute
   ErrorIndexRoute: typeof ErrorIndexRoute
 }
 
@@ -168,6 +181,13 @@ declare module '@tanstack/react-router' {
       path: '/error'
       fullPath: '/error/'
       preLoaderRoute: typeof ErrorIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/venue/$venueId': {
+      id: '/venue/$venueId'
+      path: '/venue/$venueId'
+      fullPath: '/venue/$venueId'
+      preLoaderRoute: typeof VenueVenueIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/create/venue': {
@@ -224,6 +244,7 @@ const rootRouteChildren: RootRouteChildren = {
   CreateBannedPersonRoute: CreateBannedPersonRoute,
   CreateStaffRoute: CreateStaffRoute,
   CreateVenueRoute: CreateVenueRoute,
+  VenueVenueIdRoute: VenueVenueIdRoute,
   ErrorIndexRoute: ErrorIndexRoute,
 }
 export const routeTree = rootRouteImport

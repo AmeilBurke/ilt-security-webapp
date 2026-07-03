@@ -15,6 +15,7 @@ import { LuFileUp } from "react-icons/lu";
 import isSetupDone from "@/api-requests/staff/isSetupDone";
 import createNewVenue from "@/api-requests/venues/createNewVenue";
 import PageCreate from "@/components/pages/PageCreate";
+import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString } from "@/utils";
 import type { IsSetupDone } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
@@ -29,7 +30,10 @@ export const Route = createFileRoute("/create/venue")({
 		}
 
 		if (isApiRequestError(result)) {
-			throw redirect({ to: "/error", search: { error: capitalizeString(result.error) } });
+			throw redirect({
+				to: "/error",
+				search: { error: capitalizeString(result.error) },
+			});
 		}
 
 		const data = result as IsSetupDone;
@@ -49,7 +53,7 @@ export const Route = createFileRoute("/create/venue")({
 
 function RouteComponent() {
 	const router = useRouter();
-	const isInitialVenueCreated = Route.useLoaderData()
+	const isInitialVenueCreated = Route.useLoaderData();
 
 	const [venueImage, setVenueImage] = useState<File | undefined>(undefined);
 	const [name, setName] = useState("");
@@ -195,12 +199,14 @@ function RouteComponent() {
 	);
 
 	return (
-		<PageCreate
-			heading="Create Venue"
-			subText="Fill out the details below to create a venue"
-			inputs={inputs}
-			button={button}
-			imagePath={!isInitialVenueCreated ? createVenueImage : undefined}
-		/>
+		<ContentContainer>
+			<PageCreate
+				heading="Create Venue"
+				subText="Fill out the details below to create a venue"
+				inputs={inputs}
+				button={button}
+				imagePath={!isInitialVenueCreated ? createVenueImage : undefined}
+			/>
+		</ContentContainer>
 	);
 }
