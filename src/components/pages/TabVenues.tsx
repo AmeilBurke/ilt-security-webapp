@@ -18,7 +18,7 @@ const TabVenues = ({ venues, userRole }: TabVenuesProps) => {
             {
                 userRole === Role.ADMIN && (
                     <Button w="full" onClick={() => router.navigate({ to: "/create/venue" })}>
-                        Create New Alert
+                        Create New Venue
                     </Button>
                 )
             }

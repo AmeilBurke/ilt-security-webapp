@@ -328,14 +328,12 @@ function RouteComponent() {
 	);
 
 	return (
-		<ContentContainer>
-			<ComponentReturnArrow navigateTo="/" />
 			<PageCreate
 				heading="Create Ban For New Person"
-				subText="Fill out the details below to create a new banned person"
+				subHeading="Fill out the details below to create a new banned person"
 				inputs={inputs}
 				button={button}
+				returnArrow={true}
 			/>
-		</ContentContainer>
 	);
 }

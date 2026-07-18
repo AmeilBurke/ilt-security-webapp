@@ -1,8 +1,5 @@
 import {
 	Button,
-	CloseButton,
-	Dialog,
-	Portal,
 	Text,
 	VStack,
 } from "@chakra-ui/react";
@@ -22,19 +19,17 @@ export type TabAlertsProps = {
 	userRole: Role;
 };
 
-// refactor each page to use updated types & create reused components
-
 const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 	const router = useRouter();
 	const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
 	const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
 
-	const openDialog = (alert: Alert) => {
+	const handleOpenDialog = (alert: Alert) => {
 		setSelectedAlertId(alert.id);
 		setIsDialogOpen(true);
 	};
 
-	const closeDialog = () => {
+	const handleCloseDialog = () => {
 		setSelectedAlertId(null);
 		setIsDialogOpen(false);
 	};
@@ -47,7 +42,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 			return;
 		}
 
-		closeDialog();
+		handleCloseDialog();
 		toast.success("Alert successfully deleted");
 		await router.invalidate();
 	};
@@ -65,7 +60,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 						<CardAlert
 							key={alert.id}
 							alert={alert}
-							onSelectAlert={() => openDialog(alert)}
+							onSelectAlert={() => handleOpenDialog(alert)}
 							userRole={userRole}
 						/>
 					))}
@@ -78,7 +73,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 				body={<Text>Are you sure you want to delete this item? This action cannot be undone.</Text>}
 				footer={
 					<>
-						<Button variant="outline" onClick={closeDialog}>
+						<Button variant="outline" onClick={handleCloseDialog}>
 							Cancel
 						</Button>
 						<Button
@@ -89,7 +84,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
 						</Button>
 					</>
 				}
-				onCloseDialog={() => closeDialog()}
+				onCloseDialog={handleCloseDialog}
 			/>
 		</VStack >
 	);

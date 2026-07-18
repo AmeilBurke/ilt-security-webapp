@@ -199,14 +199,13 @@ function RouteComponent() {
 	);
 
 	return (
-		<ContentContainer>
-			<PageCreate
-				heading="Create Venue"
-				subText="Fill out the details below to create a venue"
-				inputs={inputs}
-				button={button}
-				imagePath={!isInitialVenueCreated ? createVenueImage : undefined}
-			/>
-		</ContentContainer>
+		<PageCreate
+			heading="Create Venue"
+			subHeading="Fill out the details below to create a venue"
+			inputs={inputs}
+			button={button}
+			imagePath={!isInitialVenueCreated ? createVenueImage : undefined}
+			returnArrow={isInitialVenueCreated}
+		/>
 	);
 }

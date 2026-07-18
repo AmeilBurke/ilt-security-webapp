@@ -1,6 +1,7 @@
 import { Box, HStack, Image, VStack } from "@chakra-ui/react";
 import ComponentPageHeading from "../ui/ComponentPageHeading";
 import ComponentReturnArrow from "../ui/ComponentReturnArrow";
+import ContentContainer from "../ui/ContentContainer";
 
 type ComponentCreateProps = {
   heading: string;
@@ -18,32 +19,62 @@ const PageCreate = ({
   imagePath,
   returnArrow
 }: ComponentCreateProps) => {
-  return (
-    <HStack>
-      <VStack w="full" gap={[undefined, undefined, 10]}>
+
+
+  if (imagePath) {
+    return (
+      <HStack>
+        <ContentContainer>
+          <VStack w="full" gap={[undefined, undefined, 10]} >
+            {
+              returnArrow && (
+                <Box w="full">
+                  <ComponentReturnArrow navigateTo="/" />
+                </Box>
+              )
+            }
+            <ComponentPageHeading heading={heading} subHeading={subHeading} />
+            <VStack
+              w={["full", undefined, "full"]}
+              gap={10}
+            >
+              {inputs}
+            </VStack>
+            {button}
+          </VStack>
+        </ContentContainer>
         {
-          returnArrow && (
-            <Box w="full">
-              <ComponentReturnArrow navigateTo="/" />
-            </Box>
-          )
+          imagePath
+            ? <Image hideBelow="md" h="dvh" src={imagePath} />
+            : null
         }
-        <ComponentPageHeading heading={heading} subHeading={subHeading} />
-        <VStack
-          w={["full", undefined, "full"]}
-          gap={10}
-        >
-          {inputs}
-        </VStack>
-        {button}
-      </VStack>
-      {
-        imagePath
-          ? <Image hideBelow="md" h="dvh" src={imagePath} />
-          : null
-      }
-    </HStack>
-  );
+      </HStack>
+    )
+  } else {
+    return (
+      <ContentContainer>
+        <HStack>
+          <VStack w="full" gap={[undefined, undefined, 10]} >
+            {
+              returnArrow && (
+                <Box w="full">
+                  <ComponentReturnArrow navigateTo="/" />
+                </Box>
+              )
+            }
+            <ComponentPageHeading heading={heading} subHeading={subHeading} />
+            <VStack
+              w={["full", undefined, "full"]}
+              gap={10}
+            >
+              {inputs}
+            </VStack>
+            {button}
+          </VStack>
+        </HStack>
+      </ContentContainer>
+    )
+  }
 };
 
 export default PageCreate;

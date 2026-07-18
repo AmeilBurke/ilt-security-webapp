@@ -9,7 +9,6 @@ import PageCreate from "@/components/pages/PageCreate";
 import BannedPersonSelector from "@/components/ui/ComponentBannedPersonSelector";
 import ComponentImageUpload from "@/components/ui/ComponentImageUpload";
 import ComponentReasonInput from "@/components/ui/ComponentReasonInput";
-import ComponentReturnArrow from "@/components/ui/ComponentReturnArrow";
 import ContentContainer from "@/components/ui/ContentContainer";
 import { isErrorCheck } from "@/utils";
 import type { ApiRequestError, BannedPerson } from "@/utils/interfaces";
@@ -35,14 +34,12 @@ export const Route = createFileRoute("/create/alert")({
 function RouteComponent() {
 	const router = useRouter();
 	const allBannedPeople = Route.useLoaderData();
-	const [selectedBannedPerson, setSelectedBannedPerson] = useState<
-		BannedPerson | undefined
-	>(undefined);
+	const [selectedBannedPerson, setSelectedBannedPerson] = useState<BannedPerson | undefined>(undefined);
 	const [alertImage, setAlertImage] = useState<File>();
 	const [reason, setReason] = useState<string>("");
 	const [bannedPersonSearch, setBannedPersonSearch] = useState("");
 
-	const uploadAlertHandler = async () => {
+	const handleUploadAlert = async () => {
 		const alertDto = new FormData();
 
 		alertDto.append("reason", reason);
@@ -100,11 +97,8 @@ function RouteComponent() {
 
 	const button = (
 		<Button
-			disabled={
-				reason === "" ||
-				(selectedBannedPerson === undefined && alertImage === undefined)
-			}
-			onClick={uploadAlertHandler}
+			disabled={reason === "" || (selectedBannedPerson === undefined && alertImage === undefined)}
+			onClick={handleUploadAlert}
 			w="full"
 		>
 			Upload Alert
@@ -112,14 +106,12 @@ function RouteComponent() {
 	);
 
 	return (
-		<ContentContainer>
-			<PageCreate
-				heading="Create Alert"
-				subHeading="Fill out the details below to create an alert"
-				inputs={inputs}
-				button={button}
-				returnArrow={true}
-			/>
-		</ContentContainer>
+		<PageCreate
+			heading="Create Alert"
+			subHeading="Fill out the details below to create an alert"
+			inputs={inputs}
+			button={button}
+			returnArrow={true}
+		/>
 	);
 }

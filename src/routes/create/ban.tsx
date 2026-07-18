@@ -370,13 +370,12 @@ function RouteComponent() {
 	);
 
 	return (
-		<ContentContainer>
 			<PageCreate
 				heading="Create Ban"
-				subText="Fill out the details below to create a ban"
+				subHeading="Fill out the details below to create a ban"
 				inputs={inputs}
 				button={button}
+				returnArrow={true}
 			/>
-		</ContentContainer>
 	);
 }

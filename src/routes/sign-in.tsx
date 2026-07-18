@@ -1,4 +1,4 @@
-import { Button, Field, Input } from "@chakra-ui/react";
+import { Box, Button, Field, Input } from "@chakra-ui/react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
 import { isAxiosError } from "axios";
 import { useState } from "react";
@@ -90,7 +90,7 @@ function RouteComponent() {
 	return (
 		<PageCreate
 			heading="Sign In"
-			subText="Enter your details to sign in"
+			subHeading="Enter your details to sign in"
 			inputs={inputs}
 			button={button}
 			imagePath={signInImage}
