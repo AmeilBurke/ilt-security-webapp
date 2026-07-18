@@ -25,11 +25,12 @@ export type BanEditDetailsProps = {
 	onSetVenueSelectionValues: (venueSelectionValues: VenueSelection[]) => void;
 };
 
+// need to check if this is finished
 const BanEditDetails = ({
 	selectedBan,
-	reason,
+	// reason,
 	onSetReason,
-	notes,
+	// notes,
 	onSetNotes,
 	endDate,
 	onSetEndDate,

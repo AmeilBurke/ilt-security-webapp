@@ -1,4 +1,3 @@
-import type { DateValue } from "@chakra-ui/react";
 import type { BanStatus, Role } from "./enums";
 
 export interface IsSetupDone {

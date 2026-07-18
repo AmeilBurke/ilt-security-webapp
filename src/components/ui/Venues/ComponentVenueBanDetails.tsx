@@ -1,7 +1,6 @@
-import { Badge, Button, DataList, HStack, Span, Text, VStack } from "@chakra-ui/react";
+import { Badge, DataList, HStack, Text, VStack } from "@chakra-ui/react";
 import dayjs from "dayjs";
-import type { Role } from "@/utils/enums";
-import type { Ban, BannedPerson } from "@/utils/interfaces";
+import type { Ban } from "@/utils/interfaces";
 import VStackGapMid from "../VStackGapMid";
 
 export type ComponentBanDetailsProps = {

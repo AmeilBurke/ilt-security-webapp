@@ -1,6 +1,5 @@
-import { Box, Button, Field, Input } from "@chakra-ui/react";
+import { Button, Field, Input } from "@chakra-ui/react";
 import { createFileRoute, useRouter } from "@tanstack/react-router";
-import { isAxiosError } from "axios";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import getJwt from "@/api-requests/authentication/getJwt";
