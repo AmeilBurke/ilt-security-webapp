@@ -256,7 +256,7 @@ function RouteComponent() {
 	return (
 		<PageCreate
 			heading="Create New Staff"
-			subText="Fill out the details below to create a new staff account"
+			subHeading="Fill out the details below to create a new staff account"
 			inputs={inputs}
 			button={button}
 		/>

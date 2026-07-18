@@ -185,7 +185,7 @@ function RouteComponent() {
 	return (
 		<PageCreate
 			heading="Let's Get Started"
-			subText="Create an admin account"
+			subHeading="Create an admin account"
 			inputs={inputs}
 			button={button}
 			imagePath={createAdminImage}
