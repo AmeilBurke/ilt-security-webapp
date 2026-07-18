@@ -10,7 +10,7 @@ const getJwt = async (email: string, password: string): Promise<{ access_token: 
 			password: password,
 		})
 		.then((response: AxiosResponse) => {
-			return response.data as { access_token: string };
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {

@@ -7,7 +7,7 @@ const deleteBanById = async (banId: string): Promise<Ban | AxiosError | ApiReque
     return await axiosInstance
         .delete(`/bans/${banId}`)
         .then((response: AxiosResponse) => {
-            return response.data as Ban;
+            return response.data;
         })
         .catch((error: AxiosError) => {
             if (isApiRequestError(error.response?.data)) {

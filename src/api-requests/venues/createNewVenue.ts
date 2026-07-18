@@ -1,13 +1,13 @@
 import type { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "@/utils/axiosInstance";
-import type { ApiRequestError } from "@/utils/interfaces";
+import type { ApiRequestError, Venue } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewVenue = async (createVenueDto: FormData) => {
+const createNewVenue = async (createVenueDto: FormData): Promise<Venue | AxiosError | ApiRequestError> => {
 	return await axiosInstance
 		.post("/venues", createVenueDto)
 		.then((response: AxiosResponse) => {
-			return response;
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {

@@ -7,7 +7,7 @@ const getAllBannedPeople = async (): Promise<BannedPerson[] | AxiosError | ApiRe
 	return await axiosInstance
 		.get("/banned-people")
 		.then((response: AxiosResponse) => {
-			return response.data as BannedPerson[];
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {

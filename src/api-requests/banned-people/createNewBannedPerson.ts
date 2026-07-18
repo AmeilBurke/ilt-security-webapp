@@ -3,7 +3,6 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError, BannedPerson } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-// need to finish adding return types to api requests then fixing result = await on each page to use new error handling & response.data as type
 const createNewBannedPerson = async (createBannedPersonDto: FormData): Promise<BannedPerson | AxiosError | ApiRequestError> => {
     return await axiosInstance
         .post("/banned-people", createBannedPersonDto)

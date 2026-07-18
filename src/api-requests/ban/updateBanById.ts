@@ -11,7 +11,7 @@ const updateBanById = async (
 	return await axiosInstance
 		.patch(`/bans/${id}`, updateBanDto)
 		.then((response: AxiosResponse) => {
-			return response.data as Ban;
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {

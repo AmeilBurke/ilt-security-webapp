@@ -7,7 +7,7 @@ const getAllStaff = async (): Promise<Staff[] | AxiosError | ApiRequestError> =>
     return await axiosInstance
         .get("/staff")
         .then((response: AxiosResponse) => {
-            return response.data as Staff[];
+            return response.data;
         })
         .catch((error: AxiosError) => {
             if (isApiRequestError(error.response?.data)) {

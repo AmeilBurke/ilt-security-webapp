@@ -9,7 +9,6 @@ import PageCreate from "@/components/pages/PageCreate";
 import BannedPersonSelector from "@/components/ui/ComponentBannedPersonSelector";
 import ComponentImageUpload from "@/components/ui/ComponentImageUpload";
 import ComponentReasonInput from "@/components/ui/ComponentReasonInput";
-import ContentContainer from "@/components/ui/ContentContainer";
 import { isErrorCheck } from "@/utils";
 import type { ApiRequestError, BannedPerson } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";

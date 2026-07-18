@@ -6,7 +6,6 @@ import {
 	type DateValue,
 	Field,
 	FileUpload,
-	IconButton,
 	Input,
 	InputGroup,
 	Portal,
@@ -18,13 +17,10 @@ import { isAxiosError } from "axios";
 import dayjs from "dayjs";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import { LiaArrowLeftSolid } from "react-icons/lia";
 import { LuFileUp } from "react-icons/lu";
 import createNewBannedPerson from "@/api-requests/banned-people/createNewBannedPerson";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
 import PageCreate from "@/components/pages/PageCreate";
-import ComponentReturnArrow from "@/components/ui/ComponentReturnArrow";
-import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString, isErrorCheck } from "@/utils";
 import type { Venue } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";

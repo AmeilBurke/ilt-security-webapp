@@ -15,7 +15,6 @@ import { LuFileUp } from "react-icons/lu";
 import isSetupDone from "@/api-requests/staff/isSetupDone";
 import createNewVenue from "@/api-requests/venues/createNewVenue";
 import PageCreate from "@/components/pages/PageCreate";
-import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString } from "@/utils";
 import type { IsSetupDone } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
@@ -89,7 +88,7 @@ function RouteComponent() {
 				return;
 			}
 
-			toast.success(`${result.data.name} was created`);
+			toast.success(`${result.name} was created`);
 			router.navigate({ to: "/" });
 		} catch (error) {
 			router.navigate({

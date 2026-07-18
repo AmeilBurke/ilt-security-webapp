@@ -1,9 +1,12 @@
 import type { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "@/utils/axiosInstance";
-import type { ApiRequestError, CreateStaffDto, Staff, Venue } from "@/utils/interfaces";
+import type { CreateStaffDto } from "@/utils/dtos";
+import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewStaff = async (createStaffDto: CreateStaffDto): Promise<string | AxiosError | ApiRequestError> => {
+const createNewStaff = async (
+	createStaffDto: CreateStaffDto,
+): Promise<string | AxiosError | ApiRequestError> => {
 	return await axiosInstance
 		.post("/staff", {
 			email: createStaffDto.email,
@@ -14,7 +17,7 @@ const createNewStaff = async (createStaffDto: CreateStaffDto): Promise<string | 
 			dutyManagerAssignments: createStaffDto.dutyManagerAssignments,
 		})
 		.then((response: AxiosResponse) => {
-			return response.data as string;
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {

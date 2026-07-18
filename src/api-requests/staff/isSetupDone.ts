@@ -6,7 +6,7 @@ const isSetupDone = async (): Promise<IsSetupDone | AxiosError | ApiRequestError
 	return axiosInstance
 		.get("/staff/setup")
 		.then((response: AxiosResponse) => {
-			return response.data as IsSetupDone;
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			return error;

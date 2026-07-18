@@ -1,9 +1,9 @@
 import type { AxiosError, AxiosResponse } from "axios";
 import axiosInstance from "@/utils/axiosInstance";
-import type { ApiRequestError } from "@/utils/interfaces";
+import type { ApiRequestError, Venue } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const getAllVenues = async () => {
+const getAllVenues = async (): Promise<Venue[] | ApiRequestError | AxiosError> => {
 	return await axiosInstance
 		.get("/venues")
 		.then((response: AxiosResponse) => {

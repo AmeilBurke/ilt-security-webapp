@@ -97,7 +97,7 @@ export const Route = createFileRoute("/")({
 
 						<Tabs.Content value="blanket bans">
 							{
-								isErrorCheck(blanketBans)
+								isErrorCheck(blanketBans) || isErrorCheck(venues)
 									? <TabError message="Cannot fetch blanket bans" />
 									: <TabBlanketBans blanketBans={blanketBans} userRole={user.role} venues={venues} />
 							}

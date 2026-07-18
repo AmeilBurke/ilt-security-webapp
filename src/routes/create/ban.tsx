@@ -28,7 +28,6 @@ import createNewBan from "@/api-requests/ban/createNewBan";
 import getAllBannedPeople from "@/api-requests/banned-people/getAllBannedPeople";
 import getAllVenues from "@/api-requests/venues/getAllVenues";
 import PageCreate from "@/components/pages/PageCreate";
-import ContentContainer from "@/components/ui/ContentContainer";
 import { capitalizeString, isErrorCheck } from "@/utils";
 import type { CreateBanDto } from "@/utils/dtos";
 import type { BannedPerson, Venue } from "@/utils/interfaces";

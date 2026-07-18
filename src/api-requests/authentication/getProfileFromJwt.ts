@@ -7,7 +7,7 @@ const getProfileFromJwt = async (): Promise<ProfileDetailsFromJwt | AxiosError |
 	return await axiosInstance
 		.get("/authentication/profile")
 		.then((response: AxiosResponse) => {
-			return response.data as ProfileDetailsFromJwt;
+			return response.data;
 		})
 		.catch((error: AxiosError) => {
 			if (isApiRequestError(error.response?.data)) {
