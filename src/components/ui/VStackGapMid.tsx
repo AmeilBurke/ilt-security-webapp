@@ -1,16 +1,11 @@
 import { VStack } from "@chakra-ui/react";
 
-
 export type VStackGapMidProps = {
-    children: React.ReactNode;
-}
+  children: React.ReactNode;
+};
 
 const VStackGapMid = ({ children }: VStackGapMidProps) => {
-    return (
-        <VStack gap={8} >
-            {children}
-        </VStack>
-    )
-}
+  return <VStack gap={8}>{children}</VStack>;
+};
 
-export default VStackGapMid
+export default VStackGapMid;

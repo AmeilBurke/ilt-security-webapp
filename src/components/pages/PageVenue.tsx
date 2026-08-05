@@ -1,8 +1,5 @@
-
 const PageVenue = () => {
-  return (
-    <div>PageVenue</div>
-  )
-}
+  return <div>PageVenue</div>;
+};
 
-export default PageVenue
+export default PageVenue;

@@ -4,18 +4,18 @@ import type { ApiRequestError, Ban } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
 const deleteBanById = async (banId: string): Promise<Ban | AxiosError | ApiRequestError> => {
-    return await axiosInstance
-        .delete(`/bans/${banId}`)
-        .then((response: AxiosResponse) => {
-            return response.data;
-        })
-        .catch((error: AxiosError) => {
-            if (isApiRequestError(error.response?.data)) {
-                return error.response?.data as ApiRequestError;
-            }
+  return await axiosInstance
+    .delete(`/bans/${banId}`)
+    .then((response: AxiosResponse) => {
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (isApiRequestError(error.response?.data)) {
+        return error.response?.data as ApiRequestError;
+      }
 
-            return error;
-        });
+      return error;
+    });
 };
 
 export default deleteBanById;

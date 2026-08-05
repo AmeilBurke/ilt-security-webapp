@@ -4,18 +4,18 @@ import type { ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
 const deleteAlertById = async (alertId: string): Promise<string | AxiosError | ApiRequestError> => {
-    return axiosInstance
-        .delete(`/alerts/${alertId}`)
-        .then((response: AxiosResponse) => {
-            return response.data;
-        })
-        .catch((error: AxiosError) => {
-            if (isApiRequestError(error.response?.data)) {
-                return error.response?.data as ApiRequestError;
-            }
+  return axiosInstance
+    .delete(`/alerts/${alertId}`)
+    .then((response: AxiosResponse) => {
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (isApiRequestError(error.response?.data)) {
+        return error.response?.data as ApiRequestError;
+      }
 
-            return error;
-        });
+      return error;
+    });
 };
 
-export default deleteAlertById
+export default deleteAlertById;

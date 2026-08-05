@@ -3,19 +3,21 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { Alert, ApiRequestError } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const createNewAlert = async (createAlertDto: FormData): Promise<Alert | AxiosError | ApiRequestError> => {
-    return axiosInstance
-        .post("/alerts", createAlertDto)
-        .then((response: AxiosResponse) => {
-            return response.data;
-        })
-        .catch((error: AxiosError) => {
-            if (isApiRequestError(error.response?.data)) {
-                return error.response?.data as ApiRequestError;
-            }
+const createNewAlert = async (
+  createAlertDto: FormData,
+): Promise<Alert | AxiosError | ApiRequestError> => {
+  return axiosInstance
+    .post("/alerts", createAlertDto)
+    .then((response: AxiosResponse) => {
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (isApiRequestError(error.response?.data)) {
+        return error.response?.data as ApiRequestError;
+      }
 
-            return error;
-        });
+      return error;
+    });
 };
 
-export default createNewAlert
+export default createNewAlert;

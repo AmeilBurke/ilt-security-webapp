@@ -1,8 +1,5 @@
-
 const BannedPersonCard = () => {
-  return (
-    <div>BannedPersonCard</div>
-  )
-}
+  return <div>BannedPersonCard</div>;
+};
 
-export default BannedPersonCard
+export default BannedPersonCard;

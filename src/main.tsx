@@ -8,27 +8,27 @@ import "@fontsource/inter/500.css";
 import "@fontsource/inter/600.css";
 import "@fontsource/inter/700.css";
 import { Toaster } from "react-hot-toast";
-import "./app.css"
+import "./app.css";
 
 const router = createRouter({ routeTree });
 
 declare module "@tanstack/react-router" {
-	interface Register {
-		router: typeof router;
-	}
+  interface Register {
+    router: typeof router;
+  }
 }
 
 const rootElement = document.getElementById("root");
 
 if (!rootElement) {
-	throw new Error("Root element not found");
+  throw new Error("Root element not found");
 }
 
 createRoot(rootElement).render(
-	<StrictMode>
-		<ChakraProvider forcedTheme="light">
-			<RouterProvider router={router} />
-			<Toaster />
-		</ChakraProvider>
-	</StrictMode>,
+  <StrictMode>
+    <ChakraProvider forcedTheme="light">
+      <RouterProvider router={router} />
+      <Toaster />
+    </ChakraProvider>
+  </StrictMode>,
 );

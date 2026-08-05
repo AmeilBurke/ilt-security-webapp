@@ -3,26 +3,20 @@ import { capitalizeString } from "@/utils";
 import type { BannedPerson } from "@/utils/interfaces";
 
 export type BannedPersonCardProps = {
-	person: BannedPerson;
+  person: BannedPerson;
 };
 
 const BannedPersonCard = ({ person }: BannedPersonCardProps) => {
-	return (
-		<VStack h="100%" align="flex-start" gap={2}>
-			<Image w="full" aspectRatio={1} objectFit="cover" src={person.imagePath} />
-			<VStack
-				w="full"
-				alignItems="flex-start"
-				gap={1}
-				fontSize="small"
-				color="gray.500"
-			>
-				<Text fontSize="md" color="black">
-					{capitalizeString(person.name)}
-				</Text>
-			</VStack>
-		</VStack>
-	);
+  return (
+    <VStack h="100%" align="flex-start" gap={2}>
+      <Image w="full" aspectRatio={1} objectFit="cover" src={person.imagePath} />
+      <VStack w="full" alignItems="flex-start" gap={1} fontSize="small" color="gray.500">
+        <Text fontSize="md" color="black">
+          {capitalizeString(person.name)}
+        </Text>
+      </VStack>
+    </VStack>
+  );
 };
 
 export default BannedPersonCard;

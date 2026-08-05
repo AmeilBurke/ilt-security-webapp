@@ -10,89 +10,85 @@ import { isApiRequestError } from "@/utils/isApiRequestError";
 import signInImage from "../assets/sign-in.webp";
 
 export const Route = createFileRoute("/sign-in")({
-	component: RouteComponent,
-	beforeLoad: () => {
-		localStorage.removeItem("jwt");
-	},
+  component: RouteComponent,
+  beforeLoad: () => {
+    localStorage.removeItem("jwt");
+  },
 });
 
 function RouteComponent() {
-	const [email, setEmail] = useState<string>("");
-	const [password, setPassword] = useState<string>("");
-	const [loading, setLoading] = useState<boolean>(false);
-	const router = useRouter();
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [loading, setLoading] = useState<boolean>(false);
+  const router = useRouter();
 
-	const signInHandler = async () => {
-		setLoading(true);
+  const signInHandler = async () => {
+    setLoading(true);
 
-		try {
-			const jwtResult = await getJwt(email, password);
-			const isError = isErrorCheck(jwtResult);
+    try {
+      const jwtResult = await getJwt(email, password);
+      const isError = isErrorCheck(jwtResult);
 
-			if (isError) {
-				if (isApiRequestError(jwtResult) && jwtResult.statusCode === 404) {
-					toast.error("Couldn't find account with that email");
-				}
-				return;
-			}
+      if (isError) {
+        if (isApiRequestError(jwtResult) && jwtResult.statusCode === 404) {
+          toast.error("Couldn't find account with that email");
+        }
+        return;
+      }
 
-			const { access_token } = jwtResult as { access_token: string };
-			localStorage.setItem("jwt", access_token);
+      const { access_token } = jwtResult as { access_token: string };
+      localStorage.setItem("jwt", access_token);
 
-			toast.success("Sign in successful");
-			router.navigate({ to: "/" });
-		} catch (error: unknown) {
-			console.log(error);
-			router.navigate({ to: "/error", search: { error: String(error) } });
-		} finally {
-			setLoading(false);
-		}
-	};
+      toast.success("Sign in successful");
+      router.navigate({ to: "/" });
+    } catch (error: unknown) {
+      console.log(error);
+      router.navigate({ to: "/error", search: { error: String(error) } });
+    } finally {
+      setLoading(false);
+    }
+  };
 
-	const inputs = (
-		<>
-			<Field.Root required>
-				<Field.Label>
-					Email <Field.RequiredIndicator />
-				</Field.Label>
-				<Input
-					onChange={(event) => setEmail(event.target.value)}
-					placeholder="Enter your email"
-					variant="flushed"
-				/>
-			</Field.Root>
+  const inputs = (
+    <>
+      <Field.Root required>
+        <Field.Label>
+          Email <Field.RequiredIndicator />
+        </Field.Label>
+        <Input
+          onChange={(event) => setEmail(event.target.value)}
+          placeholder="Enter your email"
+          variant="flushed"
+        />
+      </Field.Root>
 
-			<Field.Root required>
-				<Field.Label>
-					Password <Field.RequiredIndicator />
-				</Field.Label>
-				<PasswordInput
-					value={password}
-					placeholder="Enter password"
-					onChange={(e) => setPassword(e.target.value)}
-					variant="flushed"
-				/>
-			</Field.Root>
-		</>
-	);
+      <Field.Root required>
+        <Field.Label>
+          Password <Field.RequiredIndicator />
+        </Field.Label>
+        <PasswordInput
+          value={password}
+          placeholder="Enter password"
+          onChange={(e) => setPassword(e.target.value)}
+          variant="flushed"
+        />
+      </Field.Root>
+    </>
+  );
 
-	const button = (
-		<Button
-			disabled={email === "" || password === ""}
-			onClick={signInHandler}
-			loading={loading}
-		>
-			Sign In
-		</Button>
-	);
+  const button = (
+    <Button disabled={email === "" || password === ""} onClick={signInHandler} loading={loading}>
+      Sign In
+    </Button>
+  );
 
-	return (
-		<PageCreate
-			heading="Sign In"
-			subHeading="Enter your details to sign in"
-			inputs={inputs}
-			button={button}
-			imagePath={signInImage}
-		/>
-	);
+  return (
+    <PageCreate
+      heading="Sign In"
+      subHeading="Enter your details to sign in"
+      inputs={inputs}
+      button={button}
+      imagePath={signInImage}
+    />
+  );
 }

@@ -1,13 +1,13 @@
 import {
-    Avatar,
-    Collapsible,
-    HStack,
-    IconButton,
-    Input,
-    RadioGroup,
-    Stack,
-    Text,
-    VStack,
+  Avatar,
+  Collapsible,
+  HStack,
+  IconButton,
+  Input,
+  RadioGroup,
+  Stack,
+  Text,
+  VStack,
 } from "@chakra-ui/react";
 import { useState } from "react";
 import { LiaBackspaceSolid } from "react-icons/lia";
@@ -16,110 +16,89 @@ import { capitalizeString } from "@/utils";
 import type { BannedPerson } from "@/utils/interfaces";
 
 type BannedPersonSelectorProps = {
-    selectedBannedPerson: BannedPerson | undefined,
-    onBannedPersonSelect: (bannedPerson: BannedPerson | undefined) => void,
-    allBanned: BannedPerson[]
-    originalSelectedBannedPerson?: BannedPerson | undefined,
-}
+  selectedBannedPerson: BannedPerson | undefined;
+  onBannedPersonSelect: (bannedPerson: BannedPerson | undefined) => void;
+  allBanned: BannedPerson[];
+  originalSelectedBannedPerson?: BannedPerson | undefined;
+};
 
-const BannedPersonSelector = ({ selectedBannedPerson, onBannedPersonSelect, allBanned, originalSelectedBannedPerson }: BannedPersonSelectorProps) => {
-    const [searchValue, setSearchValue] = useState("");
+const BannedPersonSelector = ({
+  selectedBannedPerson,
+  onBannedPersonSelect,
+  allBanned,
+  originalSelectedBannedPerson,
+}: BannedPersonSelectorProps) => {
+  const [searchValue, setSearchValue] = useState("");
 
-    const handleClear = () => {
-        if (originalSelectedBannedPerson) {
-            onBannedPersonSelect(originalSelectedBannedPerson)
-            return
-        }
-
-        onBannedPersonSelect(undefined)
+  const handleClear = () => {
+    if (originalSelectedBannedPerson) {
+      onBannedPersonSelect(originalSelectedBannedPerson);
+      return;
     }
 
-    const handlePersonSelect = (id: string) => {
-        const person = allBanned.find((person) => person.id === id);
-        if (person) {
-            onBannedPersonSelect(person)
-        }
-    };
+    onBannedPersonSelect(undefined);
+  };
 
-    const bannedPeopleFiltered = allBanned.filter((person) =>
-        person.name.toLowerCase().includes(searchValue.toLowerCase()),
-    );
+  const handlePersonSelect = (id: string) => {
+    const person = allBanned.find((person) => person.id === id);
+    if (person) {
+      onBannedPersonSelect(person);
+    }
+  };
 
-    return (
-        <Collapsible.Root
-            w="full"
-            px={2}
-            borderBottomColor="blackAlpha.300"
-            borderWidth="1px"
-        >
+  const bannedPeopleFiltered = allBanned.filter((person) =>
+    person.name.toLowerCase().includes(searchValue.toLowerCase()),
+  );
 
-            <HStack>
-                <Collapsible.Trigger
-                    w="full"
-                    paddingY={0}
-                    display="flex"
-                    gap={2}
-                    alignItems="center"
-                >
-                    <Collapsible.Indicator
-                        transition="transform 0.2s"
-                        _open={{ transform: "rotate(90deg)" }}
-                    >
-                        <LuChevronRight />
-                    </Collapsible.Indicator>
-                    <Text w="full" textAlign="start" fontSize="sm">
-                        {selectedBannedPerson
-                            ? selectedBannedPerson.name
-                            : "Select banned person here"}
-                    </Text>
-                </Collapsible.Trigger>
-                <IconButton
-                    variant="ghost"
-                    onClick={handleClear}
-                    opacity={selectedBannedPerson ? 1 : 0}
-                >
-                    <LiaBackspaceSolid />
-                </IconButton>
-            </HStack>
+  return (
+    <Collapsible.Root w="full" px={2} borderBottomColor="blackAlpha.300" borderWidth="1px">
+      <HStack>
+        <Collapsible.Trigger w="full" paddingY={0} display="flex" gap={2} alignItems="center">
+          <Collapsible.Indicator transition="transform 0.2s" _open={{ transform: "rotate(90deg)" }}>
+            <LuChevronRight />
+          </Collapsible.Indicator>
+          <Text w="full" textAlign="start" fontSize="sm">
+            {selectedBannedPerson ? selectedBannedPerson.name : "Select banned person here"}
+          </Text>
+        </Collapsible.Trigger>
+        <IconButton variant="ghost" onClick={handleClear} opacity={selectedBannedPerson ? 1 : 0}>
+          <LiaBackspaceSolid />
+        </IconButton>
+      </HStack>
 
-            <Collapsible.Content>
-                <Stack padding={4} gap={8}>
-                    <Input
-                        placeholder="Search people"
-                        value={searchValue}
-                        onChange={(e) => setSearchValue(e.target.value)}
-                    />
-                    <RadioGroup.Root
-                        value={selectedBannedPerson?.id ?? ""}
-                        onValueChange={(e) => handlePersonSelect(String(e.value))}
-                    >
-                        <VStack w="full" gap={8}>
-                            {bannedPeopleFiltered.map((person) => (
-                                <RadioGroup.Item
-                                    w="full"
-                                    key={person.id}
-                                    value={person.id}
-                                    alignItems="center"
-                                >
-                                    <RadioGroup.ItemHiddenInput />
-                                    <RadioGroup.ItemIndicator />
-                                    <RadioGroup.ItemText>
-                                        <HStack gap={4}>
-                                            <Avatar.Root size="lg">
-                                                <Avatar.Fallback name={person.name} />
-                                                <Avatar.Image src={person.imagePath} />
-                                            </Avatar.Root>
-                                            <Text>{capitalizeString(person.name)}</Text>
-                                        </HStack>
-                                    </RadioGroup.ItemText>
-                                </RadioGroup.Item>
-                            ))}
-                        </VStack>
-                    </RadioGroup.Root>
-                </Stack>
-            </Collapsible.Content>
-        </Collapsible.Root >
-    );
+      <Collapsible.Content>
+        <Stack padding={4} gap={8}>
+          <Input
+            placeholder="Search people"
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+          />
+          <RadioGroup.Root
+            value={selectedBannedPerson?.id ?? ""}
+            onValueChange={(e) => handlePersonSelect(String(e.value))}
+          >
+            <VStack w="full" gap={8}>
+              {bannedPeopleFiltered.map((person) => (
+                <RadioGroup.Item w="full" key={person.id} value={person.id} alignItems="center">
+                  <RadioGroup.ItemHiddenInput />
+                  <RadioGroup.ItemIndicator />
+                  <RadioGroup.ItemText>
+                    <HStack gap={4}>
+                      <Avatar.Root size="lg">
+                        <Avatar.Fallback name={person.name} />
+                        <Avatar.Image src={person.imagePath} />
+                      </Avatar.Root>
+                      <Text>{capitalizeString(person.name)}</Text>
+                    </HStack>
+                  </RadioGroup.ItemText>
+                </RadioGroup.Item>
+              ))}
+            </VStack>
+          </RadioGroup.Root>
+        </Stack>
+      </Collapsible.Content>
+    </Collapsible.Root>
+  );
 };
 
 export default BannedPersonSelector;

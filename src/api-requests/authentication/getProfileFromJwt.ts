@@ -3,19 +3,21 @@ import axiosInstance from "@/utils/axiosInstance";
 import type { ApiRequestError, ProfileDetailsFromJwt } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
-const getProfileFromJwt = async (): Promise<ProfileDetailsFromJwt | AxiosError | ApiRequestError> => {
-	return await axiosInstance
-		.get("/authentication/profile")
-		.then((response: AxiosResponse) => {
-			return response.data;
-		})
-		.catch((error: AxiosError) => {
-			if (isApiRequestError(error.response?.data)) {
-				return error.response?.data as ApiRequestError;
-			}
+const getProfileFromJwt = async (): Promise<
+  ProfileDetailsFromJwt | AxiosError | ApiRequestError
+> => {
+  return await axiosInstance
+    .get("/authentication/profile")
+    .then((response: AxiosResponse) => {
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (isApiRequestError(error.response?.data)) {
+        return error.response?.data as ApiRequestError;
+      }
 
-			return error;
-		});
+      return error;
+    });
 };
 
 export default getProfileFromJwt;

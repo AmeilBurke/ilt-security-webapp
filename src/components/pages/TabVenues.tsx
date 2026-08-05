@@ -6,33 +6,31 @@ import ComponentGrid from "../ui/ComponentGrid";
 import VenueCard from "../ui/Venues/VenueCard";
 
 export type TabVenuesProps = {
-    venues: Venue[];
-    userRole: Role;
+  venues: Venue[];
+  userRole: Role;
 };
 
 const TabVenues = ({ venues, userRole }: TabVenuesProps) => {
-    const router = useRouter();
+  const router = useRouter();
 
-    return (
-        <VStack w="full" gap={8}>
-            {
-                userRole === Role.ADMIN && (
-                    <Button w="full" onClick={() => router.navigate({ to: "/create/venue" })}>
-                        Create New Venue
-                    </Button>
-                )
-            }
-            <ComponentGrid>
-                {venues.map((venue) => {
-                    return (
-                        <Link key={venue.id} to={`/venue/$venueId`} params={{ venueId: venue.id }}>
-                            <VenueCard venue={venue} />
-                        </Link>
-                    );
-                })}
-            </ComponentGrid>
-        </VStack >
-    );
+  return (
+    <VStack w="full" gap={8}>
+      {userRole === Role.ADMIN && (
+        <Button w="full" onClick={() => router.navigate({ to: "/create/venue" })}>
+          Create New Venue
+        </Button>
+      )}
+      <ComponentGrid>
+        {venues.map((venue) => {
+          return (
+            <Link key={venue.id} to={`/venue/$venueId`} params={{ venueId: venue.id }}>
+              <VenueCard venue={venue} />
+            </Link>
+          );
+        })}
+      </ComponentGrid>
+    </VStack>
+  );
 };
 
 export default TabVenues;

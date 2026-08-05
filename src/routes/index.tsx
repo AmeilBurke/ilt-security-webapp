@@ -20,106 +20,125 @@ import { isErrorCheck } from "@/utils";
 import { Role } from "@/utils/enums";
 import type { ProfileDetailsFromJwt } from "@/utils/interfaces";
 export const Route = createFileRoute("/")({
-	errorComponent: ({ error }) => <div>{String(error)}</div>,
-	beforeLoad: async () => {
-		const jwtToken = localStorage.getItem("jwt");
+  errorComponent: ({ error }) => <div>{String(error)}</div>,
+  beforeLoad: async () => {
+    const jwtToken = localStorage.getItem("jwt");
 
-		if (!jwtToken) {
-			throw redirect({ to: "/sign-in" });
-		}
+    if (!jwtToken) {
+      throw redirect({ to: "/sign-in" });
+    }
 
-		const result = await getProfileFromJwt();
-		const isError = isErrorCheck(result);
+    const result = await getProfileFromJwt();
+    const isError = isErrorCheck(result);
 
-		if (isError) {
-			throw redirect({ to: "/sign-in" });
-		}
+    if (isError) {
+      throw redirect({ to: "/sign-in" });
+    }
 
-		return { staff: result as ProfileDetailsFromJwt };
-	},
-	loader: async () => {
-		const [alerts, pendingBans, blanketBans, venues, staff, allBanned] =
-			await Promise.all([
-				getAllAlerts(),
-				getAllWithPendingBan(),
-				getAllBlanketBannedPeople(),
-				getAllVenues(),
-				getAllStaff(),
-				getAllBannedPeople(),
-			]);
+    return { staff: result as ProfileDetailsFromJwt };
+  },
+  loader: async () => {
+    const [alerts, pendingBans, blanketBans, venues, staff, allBanned] = await Promise.all([
+      getAllAlerts(),
+      getAllWithPendingBan(),
+      getAllBlanketBannedPeople(),
+      getAllVenues(),
+      getAllStaff(),
+      getAllBannedPeople(),
+    ]);
 
-		return { alerts, pendingBans, blanketBans, venues, staff, allBanned };
-	},
-	component: () => {
-		const { staff: user } = Route.useRouteContext();
-		const { alerts, pendingBans, blanketBans, venues, staff, allBanned } = Route.useLoaderData();
-		const [activeTab, setActiveTab] = useState("alerts");
+    return { alerts, pendingBans, blanketBans, venues, staff, allBanned };
+  },
+  component: () => {
+    const { staff: user } = Route.useRouteContext();
+    const { alerts, pendingBans, blanketBans, venues, staff, allBanned } = Route.useLoaderData();
+    const [activeTab, setActiveTab] = useState("alerts");
 
-		function TabError({ message }: { message: string }) {
-			return <Text>Cannot fetch {message}</Text>;
-		}
+    function TabError({ message }: { message: string }) {
+      return <Text>Cannot fetch {message}</Text>;
+    }
 
-		// need to figure out vetical tabs for mobile: https://chakra-ui.com/docs/components/tabs#members
-		return (
-			<Box>
-				<ContentContainer>
-					<Text textStyle="title" textTransform="capitalize">Dashboard - {activeTab}</Text>
-					<Text textStyle="muted" textTransform="capitalize" >Welcome {user.name}</Text>
+    // need to figure out vetical tabs for mobile: https://chakra-ui.com/docs/components/tabs#members
+    return (
+      <Box>
+        <ContentContainer>
+          <Text textStyle="title" textTransform="capitalize">
+            Dashboard - {activeTab}
+          </Text>
+          <Text textStyle="muted" textTransform="capitalize">
+            Welcome {user.name}
+          </Text>
 
-					<Tabs.Root value={activeTab} onValueChange={(e) => setActiveTab(e.value)}>
-						<Tabs.List overflowX="auto" overflowY="hidden" whiteSpace="nowrap">
-							<Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden"><LiaExclamationSolid />Alerts</Tabs.Trigger>
-							{
-								user.role === Role.ADMIN && (
-									<Tabs.Trigger value="pending bans" flexShrink={0}><LiaExclamationSolid />Pending Bans</Tabs.Trigger>
-								)
-							}
-							<Tabs.Trigger value="blanket bans" flexShrink={0}><LuSquareCheck />Blanket Bans</Tabs.Trigger>
-							<Tabs.Trigger value="venues" flexShrink={0}><LuSquareCheck />Venues</Tabs.Trigger>
-							<Tabs.Trigger value="staff" flexShrink={0}><LuSquareCheck />Staff</Tabs.Trigger>
-						</Tabs.List>
+          <Tabs.Root value={activeTab} onValueChange={(e) => setActiveTab(e.value)}>
+            <Tabs.List overflowX="auto" overflowY="hidden" whiteSpace="nowrap">
+              <Tabs.Trigger value="alerts" flexShrink={0} overflowY="hidden">
+                <LiaExclamationSolid />
+                Alerts
+              </Tabs.Trigger>
+              {user.role === Role.ADMIN && (
+                <Tabs.Trigger value="pending bans" flexShrink={0}>
+                  <LiaExclamationSolid />
+                  Pending Bans
+                </Tabs.Trigger>
+              )}
+              <Tabs.Trigger value="blanket bans" flexShrink={0}>
+                <LuSquareCheck />
+                Blanket Bans
+              </Tabs.Trigger>
+              <Tabs.Trigger value="venues" flexShrink={0}>
+                <LuSquareCheck />
+                Venues
+              </Tabs.Trigger>
+              <Tabs.Trigger value="staff" flexShrink={0}>
+                <LuSquareCheck />
+                Staff
+              </Tabs.Trigger>
+            </Tabs.List>
 
-						<Tabs.Content value="alerts">
-							{
-								isErrorCheck(alerts)
-									? <TabError message="Cannot fetch alerts" />
-									: <TabAlerts alerts={alerts} userRole={user.role} />
-							}
-						</Tabs.Content>
+            <Tabs.Content value="alerts">
+              {isErrorCheck(alerts) ? (
+                <TabError message="Cannot fetch alerts" />
+              ) : (
+                <TabAlerts alerts={alerts} userRole={user.role} />
+              )}
+            </Tabs.Content>
 
-						<Tabs.Content value="pending bans">
-							{
-								user.role !== Role.ADMIN || isErrorCheck(pendingBans) || isErrorCheck(venues) || isErrorCheck(allBanned)
-									? <TabError message="Cannot fetch pending bans" />
-									: <TabPendingBans pendingBans={pendingBans} venues={venues} allBanned={allBanned} />
-							}
-						</Tabs.Content>
+            <Tabs.Content value="pending bans">
+              {user.role !== Role.ADMIN ||
+              isErrorCheck(pendingBans) ||
+              isErrorCheck(venues) ||
+              isErrorCheck(allBanned) ? (
+                <TabError message="Cannot fetch pending bans" />
+              ) : (
+                <TabPendingBans pendingBans={pendingBans} venues={venues} allBanned={allBanned} />
+              )}
+            </Tabs.Content>
 
-						<Tabs.Content value="blanket bans">
-							{
-								isErrorCheck(blanketBans) || isErrorCheck(venues)
-									? <TabError message="Cannot fetch blanket bans" />
-									: <TabBlanketBans blanketBans={blanketBans} userRole={user.role} venues={venues} />
-							}
-						</Tabs.Content>
+            <Tabs.Content value="blanket bans">
+              {isErrorCheck(blanketBans) || isErrorCheck(venues) ? (
+                <TabError message="Cannot fetch blanket bans" />
+              ) : (
+                <TabBlanketBans blanketBans={blanketBans} userRole={user.role} venues={venues} />
+              )}
+            </Tabs.Content>
 
-						<Tabs.Content value="venues">
-							{
-								isErrorCheck(venues)
-									? <TabError message="Cannot fetch venues" />
-									: <TabVenues venues={venues} userRole={user.role} />
-							}
-						</Tabs.Content>
-						<Tabs.Content value="staff">
-							{
-								isErrorCheck(staff)
-									? <TabError message="Cannot fetch staff" />
-									: <TabStaff staff={staff} />
-							}
-						</Tabs.Content>
-					</Tabs.Root>
-				</ContentContainer>
-			</Box>
-		);
-	},
+            <Tabs.Content value="venues">
+              {isErrorCheck(venues) ? (
+                <TabError message="Cannot fetch venues" />
+              ) : (
+                <TabVenues venues={venues} userRole={user.role} />
+              )}
+            </Tabs.Content>
+            <Tabs.Content value="staff">
+              {isErrorCheck(staff) ? (
+                <TabError message="Cannot fetch staff" />
+              ) : (
+                <TabStaff staff={staff} />
+              )}
+            </Tabs.Content>
+          </Tabs.Root>
+        </ContentContainer>
+      </Box>
+    );
+  },
 });

@@ -4,18 +4,18 @@ import type { ApiRequestError, Staff } from "@/utils/interfaces";
 import { isApiRequestError } from "@/utils/isApiRequestError";
 
 const getAllStaff = async (): Promise<Staff[] | AxiosError | ApiRequestError> => {
-    return await axiosInstance
-        .get("/staff")
-        .then((response: AxiosResponse) => {
-            return response.data;
-        })
-        .catch((error: AxiosError) => {
-            if (isApiRequestError(error.response?.data)) {
-                return error.response?.data as ApiRequestError;
-            }
+  return await axiosInstance
+    .get("/staff")
+    .then((response: AxiosResponse) => {
+      return response.data;
+    })
+    .catch((error: AxiosError) => {
+      if (isApiRequestError(error.response?.data)) {
+        return error.response?.data as ApiRequestError;
+      }
 
-            return error;
-        });
+      return error;
+    });
 };
 
 export default getAllStaff;

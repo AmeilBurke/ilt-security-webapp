@@ -17,63 +17,47 @@ const PageCreate = ({
   inputs,
   button,
   imagePath,
-  returnArrow
+  returnArrow,
 }: ComponentCreateProps) => {
-
-
   if (imagePath) {
     return (
       <HStack>
         <ContentContainer>
-          <VStack w="full" gap={[undefined, undefined, 10]} >
-            {
-              returnArrow && (
-                <Box w="full">
-                  <ComponentReturnArrow navigateTo="/" />
-                </Box>
-              )
-            }
+          <VStack w="full" gap={[undefined, undefined, 10]}>
+            {returnArrow && (
+              <Box w="full">
+                <ComponentReturnArrow navigateTo="/" />
+              </Box>
+            )}
             <ComponentPageHeading heading={heading} subHeading={subHeading} />
-            <VStack
-              w={["full", undefined, "full"]}
-              gap={10}
-            >
+            <VStack w={["full", undefined, "full"]} gap={10}>
               {inputs}
             </VStack>
             {button}
           </VStack>
         </ContentContainer>
-        {
-          imagePath
-            ? <Image hideBelow="md" h="dvh" src={imagePath} />
-            : null
-        }
+        {imagePath ? <Image hideBelow="md" h="dvh" src={imagePath} /> : null}
       </HStack>
-    )
+    );
   } else {
     return (
       <ContentContainer>
         <HStack>
-          <VStack w="full" gap={[undefined, undefined, 10]} >
-            {
-              returnArrow && (
-                <Box w="full">
-                  <ComponentReturnArrow navigateTo="/" />
-                </Box>
-              )
-            }
+          <VStack w="full" gap={[undefined, undefined, 10]}>
+            {returnArrow && (
+              <Box w="full">
+                <ComponentReturnArrow navigateTo="/" />
+              </Box>
+            )}
             <ComponentPageHeading heading={heading} subHeading={subHeading} />
-            <VStack
-              w={["full", undefined, "full"]}
-              gap={10}
-            >
+            <VStack w={["full", undefined, "full"]} gap={10}>
               {inputs}
             </VStack>
             {button}
           </VStack>
         </HStack>
       </ContentContainer>
-    )
+    );
   }
 };
 

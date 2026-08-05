@@ -11,41 +11,38 @@ import { isApiRequestError } from "@/utils/isApiRequestError";
 dayjs.extend(customParseFormat);
 
 export const Route = createRootRoute({
-	beforeLoad: async ({ location }) => {
-		if (
-			location.pathname === "/error" ||
-			location.pathname.startsWith("/create")
-		) {
-			return;
-		}
+  beforeLoad: async ({ location }) => {
+    if (location.pathname === "/error" || location.pathname.startsWith("/create")) {
+      return;
+    }
 
-		const result = await isSetupDone();
+    const result = await isSetupDone();
 
-		const isError = isErrorCheck(result);
+    const isError = isErrorCheck(result);
 
-		if (isError) {
-			if (isAxiosError(result)) {
-				throw redirect({ to: "/error", search: { error: result.message } });
-			}
+    if (isError) {
+      if (isAxiosError(result)) {
+        throw redirect({ to: "/error", search: { error: result.message } });
+      }
 
-			if (isApiRequestError(result)) {
-				throw redirect({ to: "/error", search: { error: result.message[0] } });
-			}
-		}
+      if (isApiRequestError(result)) {
+        throw redirect({ to: "/error", search: { error: result.message[0] } });
+      }
+    }
 
-		const data = result as IsSetupDone;
+    const data = result as IsSetupDone;
 
-		if (!data.isInitialAdminCreated) {
-			throw redirect({ to: "/create/admin" });
-		}
+    if (!data.isInitialAdminCreated) {
+      throw redirect({ to: "/create/admin" });
+    }
 
-		if (!data.isInitialVenueCreated) {
-			throw redirect({ to: "/create/venue" });
-		}
-	},
-	component: () => (
-		<Box>
-			<Outlet />
-		</Box>
-	),
+    if (!data.isInitialVenueCreated) {
+      throw redirect({ to: "/create/venue" });
+    }
+  },
+  component: () => (
+    <Box>
+      <Outlet />
+    </Box>
+  ),
 });
