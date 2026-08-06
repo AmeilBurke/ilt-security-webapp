@@ -10,9 +10,13 @@ const TabStaff = ({ staff }: { staff: Staff[] }) => {
         onClick={() => {
           router.navigate({ to: "/create/staff" });
         }}
+        w="full"
       >
         Add New Staff
       </Button>
+
+        <Text>Click on any staff to view their details</Text>
+
       <VStack w="full" alignItems="flex-start">
         {staff.map((person) => {
           return <Text key={person.id}>{person.name}</Text>;

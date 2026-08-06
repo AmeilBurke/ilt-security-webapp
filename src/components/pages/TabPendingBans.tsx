@@ -28,6 +28,7 @@ import CardPendingBanTrigger from "../ui/CardPendingBan/PendingBannedPersonCard"
 import ComponentGrid from "../ui/ComponentGrid";
 import ConfirmDialog from "../ui/ConfirmDialog";
 
+//needs updating to new design choices
 export type TabPendingBansProps = {
   pendingBans: Ban[];
   venues: Venue[];
@@ -49,7 +50,7 @@ const computeVenueSelections = (pendingBan: Ban, venues: Venue[]): VenueSelectio
 const TabPendingBans = ({ pendingBans, venues, allBanned }: TabPendingBansProps) => {
   const router = useRouter();
   const [selectedPendingBan, setSelectedPendingBan] = useState<Ban | null>(null);
-  const [dialogMode, setDialogMode] = useState<DialogMode>(null);
+  const [dialogMode, setDialogMode] = useState<DialogMode>("none");
   const [selectedBannedPerson, setSelectedBannedPerson] = useState<BannedPerson | undefined>(
     undefined,
   );
@@ -88,7 +89,7 @@ const TabPendingBans = ({ pendingBans, venues, allBanned }: TabPendingBansProps)
   };
 
   const closeDialog = () => {
-    setDialogMode(null);
+    setDialogMode("none");
   };
 
   const handleDeletePendingBan = async (pendingBanId: string) => {
@@ -214,7 +215,7 @@ const TabPendingBans = ({ pendingBans, venues, allBanned }: TabPendingBansProps)
         placement="center"
         role="alertdialog"
         closeOnInteractOutside
-        open={dialogMode !== null}
+        open={dialogMode === "details"}
         onOpenChange={(e) => {
           if (!e.open) closeDialog();
         }}

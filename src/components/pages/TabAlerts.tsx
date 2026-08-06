@@ -5,7 +5,7 @@ import toast from "react-hot-toast";
 import deleteAlertById from "@/api-requests/alerts/deleteAlertById";
 import { isErrorCheck } from "@/utils";
 import type { Role } from "@/utils/enums";
-import type { Alert } from "@/utils/interfaces";
+import type { Alert, DialogMode } from "@/utils/interfaces";
 import CardAlert from "../ui/CardAlert";
 import ComponentDialog from "../ui/ComponentDialog";
 import ComponentGrid from "../ui/ComponentGrid";
@@ -17,17 +17,20 @@ export type TabAlertsProps = {
 
 const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
   const router = useRouter();
-  const [selectedAlertId, setSelectedAlertId] = useState<string | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
+  const [selectedAlertId, setSelectedAlertId] = useState<Alert["id"] | null>(null);
+  const [dialogMode, setDialogMode] = useState<DialogMode>("none");
 
   const handleOpenDialog = (alert: Alert) => {
     setSelectedAlertId(alert.id);
-    setIsDialogOpen(true);
+    setDialogMode("delete");
   };
 
   const handleCloseDialog = () => {
+    setDialogMode("none");
+  };
+
+  const handleCleanupDialog = () => {
     setSelectedAlertId(null);
-    setIsDialogOpen(false);
   };
 
   const handleDeleteAlert = async (alertId: string) => {
@@ -65,7 +68,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
       )}
 
       <ComponentDialog
-        isOpen={isDialogOpen}
+        isOpen={dialogMode === "delete"}
         title="Confirm Delete"
         body={<Text>Are you sure you want to delete this item? This action cannot be undone.</Text>}
         footer={
@@ -82,6 +85,7 @@ const TabAlerts = ({ alerts, userRole }: TabAlertsProps) => {
           </>
         }
         onCloseDialog={handleCloseDialog}
+        onCloseFinish={handleCleanupDialog}
       />
     </VStack>
   );
