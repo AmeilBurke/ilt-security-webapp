@@ -60,15 +60,16 @@ export const handleEditBanDetailUpdate = async (
   }
 
   toast.success("Ban updated successfully");
-  // handleEditBanDetailDialogClose();
-  // setIsBanDetailsDialogOpen(false);
-
   onDialogClose();
   router.invalidate();
 };
 
 export const areAllVenueSelectionValuesChecked = (venueSelection: VenueSelection[]) => {
   return venueSelection.every((v) => v.checked);
+};
+
+export const areNoneVenueSelectionValuesChecked = (venueSelection: VenueSelection[]) => {
+  return venueSelection.every((v) => !v.checked);
 };
 
 export const areAllVenueSelectionValuesIndeterminate = (

@@ -1,14 +1,4 @@
-import {
-  Avatar,
-  Collapsible,
-  HStack,
-  IconButton,
-  Input,
-  RadioGroup,
-  Stack,
-  Text,
-  VStack,
-} from "@chakra-ui/react";
+import { Avatar, Collapsible, HStack, IconButton, Input, RadioGroup, Stack, Text, VStack } from "@chakra-ui/react";
 import { useState } from "react";
 import { LiaBackspaceSolid } from "react-icons/lia";
 import { LuChevronRight } from "react-icons/lu";
@@ -19,6 +9,7 @@ type BannedPersonSelectorProps = {
   selectedBannedPerson: BannedPerson | undefined;
   onBannedPersonSelect: (bannedPerson: BannedPerson | undefined) => void;
   allBanned: BannedPerson[];
+  isClearable?: boolean;
   originalSelectedBannedPerson?: BannedPerson | undefined;
 };
 
@@ -26,6 +17,7 @@ const BannedPersonSelector = ({
   selectedBannedPerson,
   onBannedPersonSelect,
   allBanned,
+  isClearable,
   originalSelectedBannedPerson,
 }: BannedPersonSelectorProps) => {
   const [searchValue, setSearchValue] = useState("");
@@ -61,18 +53,20 @@ const BannedPersonSelector = ({
             {selectedBannedPerson ? selectedBannedPerson.name : "Select banned person here"}
           </Text>
         </Collapsible.Trigger>
-        <IconButton variant="ghost" onClick={handleClear} opacity={selectedBannedPerson ? 1 : 0}>
-          <LiaBackspaceSolid />
-        </IconButton>
+
+          <IconButton
+            variant="ghost"
+            onClick={selectedBannedPerson && isClearable ? handleClear : undefined}
+            opacity={selectedBannedPerson && isClearable ? 1 : 0}
+            cursor={selectedBannedPerson && isClearable ? "pointer" : "auto"}
+          >
+            <LiaBackspaceSolid />
+          </IconButton>
       </HStack>
 
       <Collapsible.Content>
         <Stack padding={4} gap={8}>
-          <Input
-            placeholder="Search people"
-            value={searchValue}
-            onChange={(e) => setSearchValue(e.target.value)}
-          />
+          <Input placeholder="Search people" value={searchValue} onChange={(e) => setSearchValue(e.target.value)} />
           <RadioGroup.Root
             value={selectedBannedPerson?.id ?? ""}
             onValueChange={(e) => handlePersonSelect(String(e.value))}
